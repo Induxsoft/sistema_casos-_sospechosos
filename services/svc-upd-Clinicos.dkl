@@ -1,0 +1,120 @@
+#include "dkli.dkh"
+#!
+module "updateClinicos"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    dc_fechainiciosintomas : @http_context<"request/post/dc_fechainiciosintomas">
+    dc_fiebre : @http_context<"request/post/dc_fiebre">
+    dc_tos : @http_context<"request/post/dc_tos">
+    dc_dolortoracico : @http_context<"request/post/dc_dolortoracico">
+    dc_dificultadrespiratoria : @http_context<"request/post/dc_dificultadrespiratoria">
+    dc_cefalea : @http_context<"request/post/dc_cefalea">
+    dc_irritabilidad : @http_context<"request/post/dc_irritabilidad">
+    dc_diarrea : @http_context<"request/post/dc_diarrea">
+    dc_vomitos : @http_context<"request/post/dc_vomitos">
+    dc_calosfrios : @http_context<"request/post/dc_calosfrios">
+    dc_dolorabdominal : @http_context<"request/post/dc_dolorabdominal">
+    dc_mialgias : @http_context<"request/post/dc_mialgias">
+    dc_artralgias : @http_context<"request/post/dc_artralgias">
+    dc_ataqueestadogeneral : @http_context<"request/post/dc_ataqueestadogeneral">
+    dc_rinorrea : @http_context<"request/post/dc_rinorrea">
+    dc_polipnea : @http_context<"request/post/dc_polipnea">
+    dc_odinofagia : @http_context<"request/post/dc_odinofagia">
+    dc_conjuntivitis : @http_context<"request/post/dc_conjuntivitis">
+    dc_cianosis : @http_context<"request/post/dc_cianosis">
+    dc_convulsiones : @http_context<"request/post/dc_convulsiones">
+    dc_otrossintomas : @http_context<"request/post/dc_otrossintomas">
+    dc_comorbilidad : @http_context<"request/post/dc_comorbilidad">
+    dc_diabetes : @http_context<"request/post/dc_diabetes">
+    dc_epoc : @http_context<"request/post/dc_epoc">
+    dc_asma : @http_context<"request/post/dc_asma">
+    dc_inmunosupresion : @http_context<"request/post/dc_inmunosupresion">
+    dc_hipertension : @http_context<"request/post/dc_hipertension">
+    dc_sida : @http_context<"request/post/dc_sida">
+    dc_cardiovascular : @http_context<"request/post/dc_cardiovascular">
+    dc_obesidad : @http_context<"request/post/dc_obesidad">
+    dc_insuficienciarenal : @http_context<"request/post/dc_insuficienciarenal">
+    dc_insuficienciahepatica : @http_context<"request/post/dc_insuficienciahepatica">
+    dc_tabaquismo : @http_context<"request/post/dc_tabaquismo">
+    dc_otraenfermedad : @http_context<"request/post/dc_otraenfermedad">
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"dc_fiebre" : dc_fiebre
+        @"dc_tos" : dc_tos
+        @"dc_dolortoracico" : dc_dolortoracico
+        @"dc_dificultadrespiratoria" : dc_dificultadrespiratoria
+        @"dc_cefalea" : dc_cefalea
+        @"dc_irritabilidad" : dc_irritabilidad
+        @"dc_diarrea" : dc_diarrea
+        @"dc_vomitos" : dc_vomitos
+        @"dc_calosfrios" : dc_calosfrios
+        @"dc_dolorabdominal" : dc_dolorabdominal
+        @"dc_mialgias" : dc_mialgias
+        @"dc_artralgias" : dc_artralgias
+        @"dc_ataqueestadogeneral" : dc_ataqueestadogeneral
+        @"dc_rinorrea" : dc_rinorrea
+        @"dc_polipnea" : dc_polipnea
+        @"dc_odinofagia" : dc_odinofagia
+        @"dc_conjuntivitis" : dc_conjuntivitis
+        @"dc_cianosis" : dc_cianosis
+        @"dc_convulsiones" : dc_convulsiones
+        @"dc_otrossintomas" : dc_otrossintomas
+        @"dc_comorbilidad" : dc_comorbilidad
+        @"dc_diabetes" : dc_diabetes
+        @"dc_epoc" : dc_epoc
+        @"dc_asma" : dc_asma
+        @"dc_inmunosupresion" : dc_inmunosupresion
+        @"dc_hipertension" : dc_hipertension
+        @"dc_sida" : dc_sida
+        @"dc_cardiovascular" : dc_cardiovascular
+        @"dc_obsidad" : dc_obesidad
+        @"dc_insuficienciarenal" : dc_insuficienciarenal
+        @"dc_insuficienciahepatica" : dc_insuficienciahepatica
+        @"dc_tabaquismo" : dc_tabaquismo
+        @"dc_otraenfermedad" : dc_otraenfermedad
+    }    
+
+    if(dc_fechainiciosintomas != "")
+    {
+        rec<"dc_fechainiciosintomas"> : dc_fechainiciosintomas
+    }
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

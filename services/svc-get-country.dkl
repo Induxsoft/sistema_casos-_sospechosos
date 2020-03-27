@@ -1,0 +1,45 @@
+#include "dkli.dkh"
+#!
+module "ServicioListarproductos"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    codigo:@http_context<"request/post/codigo">    
+
+    new mirecord
+    {
+        @"sys_pk": codigo
+    }
+
+    text querybusqueda
+    {$"
+      SELECT c.* FROM covid.fk_paisesvisitados c inner join covid.estudio_epidemiologico e on c.sys_pk = e.fk_paisesvisitados where e.sys_pk = @sys_pk and e.sys_deleted != 1;
+    "}
+
+    ref t = dbr.table(db,querybusqueda,mirecord)
+
+    new dx
+    {
+        @"success":@true
+        @"data*":t
+    }
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

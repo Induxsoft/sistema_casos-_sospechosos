@@ -1,0 +1,47 @@
+#include "dkli.dkh"
+#!
+module "refreshViaje"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    fK_ee : @http_context<"request/post/fK_ee">    
+
+    new rec
+    {        
+        @"fK_ee" : fK_ee
+    }        
+    
+    text queryallViajes
+    {$"
+        select sys_pk, pais_visitado , ciudad_visitada, DATE_FORMAT(fecha_llegada, '%Y-%m-%d'), DATE_FORMAT(fecha_salida, '%Y-%m-%d'), aerolinea_vuelo, fk_ee from covid.fk_paisesvisitados where fK_ee=@fK_ee;
+    "}
+
+    ref viajes = dbr.table(db,queryallViajes,rec)
+
+    new dx
+    {
+        @"success":@true
+        @"data": to.json(viajes)
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+    
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

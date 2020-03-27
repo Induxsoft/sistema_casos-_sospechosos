@@ -1,0 +1,60 @@
+#include "dkli.dkh"
+#!
+module "insertarViaje"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    primerapellido : @http_context<"request/post/primerapellido">
+    segundoapellido : @http_context<"request/post/segundoapellido">
+    nombres : @http_context<"request/post/nombres">
+    sexocontacto : @http_context<"request/post/sexocontacto">
+    edad_contacto : @http_context<"request/post/edad_contacto">
+    tipocontacto : @http_context<"request/post/tipocontacto">
+    email_contacto : @http_context<"request/post/email_contacto">
+    sintomascontacto : @http_context<"request/post/sintomascontacto">
+    observaciones_contacto : @http_context<"request/post/observaciones_contacto">
+    fK_ee : @http_context<"request/post/fK_ee">    
+
+    new rec
+    {
+        @"primerapellido" : primerapellido
+        @"segundoapellido" : segundoapellido
+        @"nombres" : nombres
+        @"sexo" : sexocontacto
+        @"edad" : edad_contacto
+        @"tipo_de_contacto" : tipocontacto
+        @"correo_electronico" : email_contacto
+        @"signos_y_sintomas" : sintomascontacto
+        @"observaciones" : observaciones_contacto
+        @"fK_ee" : fK_ee
+    }    
+
+    do dbr.insert(db,"covid.fk_contactos",rec)
+
+    new dx
+    {
+        @"success":@true
+        @"data": "Agregado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

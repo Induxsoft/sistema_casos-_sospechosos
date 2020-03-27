@@ -1,0 +1,132 @@
+﻿<?xml version="1.0"?>
+<Documento>
+    <Notificante entidad="@entidad" jurisdiccion="@jurisdiccion" municipio="@municipio" nombreunidadmedica="@nombreunidadmedica" institucion="@institucion" clues="@clues"></Notificante>
+    <General fechaingresounidad="@fechaingresounidad" primerapellido="@primerapellido" segundoapellido="@segundoapellido" nombres="@nombres" curp="@curp" sexoHombre="@sexoHombregeneral" sexoMujer="@sexoMujergeneral" nexpedientesegsocial="@nexpedientesegsocial" telefono="@telefonogeneral" ocupacion="@ocupaciongeneral">
+        <Purperio si="@Purperiosi" no="@Purperiono" dias="@Purperiodias" ></Purperio>
+        <FechaNacimiento dia="@FechaNacimientodia" mes="@FechaNacimientomes" anio="@FechaNacimientonio" edad="@FechaNacimientoedad" ></FechaNacimiento>
+        <Embarazo si="@Embarazosi" no="@Embarazono" meses="@Embarazomeses" ></Embarazo>
+        <Nacionalidad mexicano="@Nacionalidadmexicano" extranjero="@Nacionalidadextranjero" pais="@Nacionalidadpais" ></Nacionalidad>
+        <Residencia entidad="@Residenciaentidad" delegacion="@Residenciadelegacion" municipio="@Residenciamunicipio" localidad="@Residencialocalidad" ></Residencia>
+        <Direccion calle="@Direccioncalle" numeroexterno="@Direccionnumeroexterior" numerointerno="@Direccionnumerointerno" entrecalle1="@Direccionentrecalle1" entrecalle2="@Direccionentrecalle2" colonia="@Direccioncolonia" codigopostal="@Direccioncodigopostal"></Direccion>
+        <Indigena si="@Indigenasi" no="@Indigenano"></Indigena>
+        <LenguaIndigena si="@LenguaIndigenasi" no="@LenguaIndigenano"></LenguaIndigena>
+        <Migrante si="@Migrantesi" no="@Migranteno"></Migrante>
+    </General>
+    <Antecedente>
+        <ViajeLocal si="@ViajeLocalsi" no="@ViajeLocalno" fechaviaje="@ViajeLocalfechaviaje" aerolinea="@ViajeLocalaerolinea" fecharegreso="@ViajeLocalfecharegreso" ></ViajeLocal>
+        <ResidenteLocal si="@ResidenteLocalsi" no="@ResidenteLocalno" ></ResidenteLocal>
+        <Contacto si="@Contactosi" no="@Contactono" seignora="@Contactoseignora" lugar="@Contactolugar" >
+            <Animal si="@Animalsi" no="@Animalno" cual="@Animalcual" tipo="@Animaltipo" >
+                <Mercado si="@Mercadosi" no="@Mercadono" lugar="@Mercadolugar" fecha="@Mercadofecha" ></Mercado>
+            </Animal>
+        </Contacto>
+        </Viajes>
+        <ContactoSospechoso si="@ContactoSospechososi" no="@ContactoSospechosono" ></ContactoSospechoso>
+        <ContactoConfirmado si="@ContactoConfirmadosi" no="@ContactoConfirmadono" ></ContactoConfirmado>
+        <ContactoViajantes si="@ContactoViajantessi" no="@ContactoViajantesno" ></ContactoViajantes>
+    </Antecedente>
+    <Clinico fechasintomas="@Clinicofechasintomas">
+        <Sintomas>
+            <Fiebre si="@Fiebresi" no="@Fiebreno"></Fiebre>
+            <Tos si="@Tossi" no="@Tosno"></Tos>
+            <DolorToracico si="@DolorToracicosi" no="@DolorToracicono"></DolorToracico>
+            <DificultadRespiratoria si="@DificultadRespiratoriasi" no="@DificultadRespiratoriano"></DificultadRespiratoria>
+            <Cefalea si="@Cefaleasi" no="@Cefaleano"></Cefalea>
+            <Irritabilidad si="@Irritabilidadsi" no="@Irritabilidadno"></Irritabilidad>
+            <Diarrea si="@Diarreasi" no="@Diarreano"></Diarrea>
+            <Vomito si="@Vomitosi" no="@Vomitono"></Vomito>
+            <Calosfrios si="@Calosfriossi" no="@Calosfriosno"></Calosfrios>
+            <Dolorabdominal si="@Dolorabdominalsi" no="@Dolorabdominalno"></Dolorabdominal>
+            <Mialgias si="@Mialgiassi" no="@Mialgiasno"></Mialgias>
+            <Artralgias si="@Artralgiassi" no="@Artralgiasno"></Artralgias>
+            <AtaqueGeneral si="@AtaqueGeneralsi" no="@AtaqueGeneralno"></AtaqueGeneral>
+            <Rinorrea si="@Rinorreasi" no="@Rinorreano"></Rinorrea>
+            <Polipnea si="@Polipneasi" no="@Polipneano"></Polipnea>
+            <Odinofagea si="@Odinofageasi" no="@Odinofageano"></Odinofagea>
+            <Conjuntivitis si="@Conjuntivitissi" no="@Conjuntivitisno"></Conjuntivitis>
+            <Cianosis si="@Cianosissi" no="@Cianosisno"></Cianosis>
+            <Convulsiones si="@Convulsionessi" no="@Convulsionesno"></Convulsiones>
+            <Otro valor="@Sintomasvalor"></Otro>
+        </Sintomas>
+        <Comorbilidad>
+            <Diabetes si="@Diabetessi" no="@Diabetesno"></Diabetes>
+            <EPOC si="@EPOCsi" no="@EPOCno"></EPOC>
+            <Asma si="@Asmasi" no="@Asmano"></Asma>
+            <Inmunosupresion si="@Inmunosupresionsi" no="@Inmunosupresionno"></Inmunosupresion>
+            <Hipertension si="@Hipertensionsi" no="@Hipertensionno"></Hipertension>
+            <VIHSida si="@VIHSidasi" no="@VIHSidano"></VIHSida>
+            <Cardiovascular si="@Cardiovascularsi" no="@Cardiovascularno"></Cardiovascular>
+            <Obesidad si="@Obesidadsi" no="@Obesidadno"></Obesidad>
+            <InsuficienciaRenal si="@InsuficienciaRenalsi" no="@InsuficienciaRenalno"></InsuficienciaRenal>
+            <InsuficienciaHepatica si="@InsuficienciaHepaticasi" no="@InsuficienciaHepaticano"></InsuficienciaHepatica>
+            <Tabaquismo si="@Tabaquismosi" no="@Tabaquismono"></Tabaquismo>
+            <Otro valor="@Comorbilidadvalor"></Otro>
+        </Comorbilidad>
+    </Clinico>
+    <UnidadMedica>
+        <Ingreso servicio="@Ingresoservicio" tipopacienteAmbulatorio="@IngresotipopacienteAmbulatorio" tipopacienteHospitalizado="@IngresotipopacienteHospitalizado" fechaingreso="@Ingresofechaingreso" >
+            <UCI si="@UCIsi" no="@UCIno"> </UCI>
+            <Intubado si="@Intubadosi" no="@Intubadono"> </Intubado>
+            <Neumonia>
+                <Clinica si="@Clinicasi" no="@Clinicano"></Clinica>
+                <Radiologica si="@Radiologicasi" no="@Radiologicano"></Radiologica>
+            </Neumonia>
+        </Ingreso>
+    </UnidadMedica>
+    <Tratamiento>
+        <AntipireticoOAnalgesico si="@AntipireticoOAnalgesicosi" no="@AntipireticoOAnalgesicono" seignora="@AntipireticoOAnalgesicoseignora" fechatratamiento="@AntipireticoOAnalgesicofechatratamiento">
+            <Paracetamol id="@Paracetamol" ></Paracetamol>
+            <Ibuprofeno id="@Ibuprofeno"></Ibuprofeno>
+            <Acidoacetilsalicilico id="@Acidoacetilsalicilico"></Acidoacetilsalicilico>
+            <Clonixinatodelisina id="@Clonixinatodelisina"></Clonixinatodelisina>
+            <Naproxeno id="@Naproxeno"></Naproxeno>
+            <Piroxicam id="@Piroxicam"></Piroxicam>
+            <Metamizolsodico id="@Metamizolsodico"></Metamizolsodico>
+            <Diclofenaco id="@Diclofenaco"></Diclofenaco>
+            <Ketorolaco id="@Ketorolaco" ></Ketorolaco>
+            <Otro valor="@AntipireticoOAnalgesicovalor"></Otro>
+        </AntipireticoOAnalgesico>
+        <Antiviral si="@Antiviralsi" no="@Antiviralno" seignora="@Antiviralseignora" fechatratamiento="@Antiviralfechatratamiento">
+            <Amantadina id="@Amantadina"></Amantadina>
+            <Rimantadina id="@Rimantadina"></Rimantadina>
+            <Oseltamivir id="@Oseltamivir"></Oseltamivir>
+            <Zanamivir id="@Zanamivir"></Zanamivir>
+            <Peramivir id="@Peramivir"></Peramivir>
+            <Ribavirina id="@Ribavirina"></Ribavirina>
+            <Otro valor="@Antiviralvalor"></Otro>
+        </Antiviral>
+        <Antibiotico si="@Antibioticosi" no="@Antibioticono" seignora="@Antibioticoseignora" fechatratamiento="@Antibioticofechatratamiento">
+            <Penicilina id="@Penicilina"></Penicilina>
+            <Dicloxacilina id="@Dicloxacilina"></Dicloxacilina>
+            <Ampicilina id="@Ampicilina"></Ampicilina>
+            <Amikacina id="@Amikacina"></Amikacina>
+            <Doxiciclina id="@Doxiciclina"></Doxiciclina>
+            <Cefalosporina id="@Cefalosporina"></Cefalosporina>
+            <Clindamicina id="@Clindamicina"></Clindamicina>
+            <Claritromicina id="@Claritromicina"></Claritromicina>
+            <Ciprofloxacino id="@Ciprofloxacino"></Ciprofloxacino>
+            <Meropenem id="@Meropenem"></Meropenem>
+            <Vancomicina id="@Vancomicina"></Vancomicina>
+            <Amoxicilina id="@Amoxicilina"></Amoxicilina>
+            <Otro valor="@Antibioticoavalor"></Otro>
+        </Antibiotico>
+    </Tratamiento>
+    <Laboratorio>
+        <Muestra si="@Muestrasi" no="@Muestrano" fechadetoma="@Muestrafechadetoma" fechaderecepcion="@Muestrafechaderecepcion" fechademuestra="@Muestrafechademuestra" fechaderesultado="@Muestrafechaderesultado" resultado="@Muestraresultado">
+            <ExudadoFaringeo id="@ExudadoFaringeo"></ExudadoFaringeo>
+            <ExudadoNasofaringeo id="@ExudadoNasofaringeo"></ExudadoNasofaringeo>
+            <LavadoBronquial id="@LavadoBronquial"></LavadoBronquial>
+            <BiopsiaPulmon id="@BiopsiaPulmon"></BiopsiaPulmon>
+        </Muestra>
+        <Diagnostico valor="@Diagnostico" ></Diagnostico>
+    </Laboratorio>
+    <Evolución evolucion="@Evoluciónevolucion" fechaegreso="@Evoluciónfechaegreso" >
+        <Defuncion fecha="@Defuncionfecha" folio="@Defuncionfolio">
+            <Covid19 si="@Covid19si" no="@Covid19no" ></Covid19>
+        </Defuncion>
+    </Evolución>
+    </Contactos>  	
+	<Elaboracion elaboro="@Elaboracionnombre" cargo="@Elaboracioncargo" fecha="@Elaboracionfecha" ></Elaboracion>
+    <Autorizacion autorizo="@Autorizacionnombre" cargo="@Autorizacioncargo" ></Autorizacion>
+	<familiar nombre="@familiarnombre" telefono="@familiartelefono" correo="@familiarcorreo"></familiar>
+</Documento>

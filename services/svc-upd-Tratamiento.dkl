@@ -1,0 +1,138 @@
+#include "dkli.dkh"
+#!
+module "updateTratamiento"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+    //piretico
+    tratamientoantipiretico : @http_context<"request/post/antipiretico">
+    fechatratamientoantipiretico : @http_context<"request/post/fecha_inicio_tratamiento_analgesico">
+    ap_paracetamol : @http_context<"request/post/ap_paracetamol">
+    ap_ibuprofeno : @http_context<"request/post/ap_ibuprofeno">
+    ap_acidoacetilsalicilico : @http_context<"request/post/ap_acidoacetilsalicilico">
+    ap_clonoxinatodelisina : @http_context<"request/post/ap_clonoxinatodelisina">
+    ap_naproxeno : @http_context<"request/post/ap_naproxeno">
+    ap_piroxicam : @http_context<"request/post/ap_piroxicam">
+    ap_metamizolsodico : @http_context<"request/post/ap_metamizolsodico">
+    ap_diclofenaco : @http_context<"request/post/ap_diclofenaco">
+    ap_ketorolaco : @http_context<"request/post/ap_ketorolaco">
+    ap_otro : @http_context<"request/post/ap_otro">
+    //viral
+    tratamientoantiviral : @http_context<"request/post/antiviral">
+    fechatratamientoantiviral : @http_context<"request/post/fecha_inicio_tratamiento_antiviral">
+    av_amantadina : @http_context<"request/post/av_amantadina">
+    av_rimantadina : @http_context<"request/post/av_rimantadina">
+	av_oseltamivir : @http_context<"request/post/av_oseltamivir">
+    av_zanamivir : @http_context<"request/post/av_zanamivir">
+    av_peramivir : @http_context<"request/post/av_peramivir">
+    av_ribavirina : @http_context<"request/post/av_ribavirina">
+    av_otro : @http_context<"request/post/av_otro">
+    //antibiotico
+    tratamientoantibiotico : @http_context<"request/post/antibiotico">
+    fechatratamientoantibiotico : @http_context<"request/post/fecha_inicio_tratamiento_antibiotico">
+    ab_penicilina : @http_context<"request/post/ab_penicilina">
+    ab_dicloxacilina : @http_context<"request/post/ab_dicloxacilina">
+    ab_ampicilina : @http_context<"request/post/ab_ampicilina">
+    ab_amikacina : @http_context<"request/post/ab_amikacina">
+    ab_doxiciclina : @http_context<"request/post/ab_doxiciclina">
+    ab_cefalosporina : @http_context<"request/post/ab_cefalosporina">
+    ab_clindamicina : @http_context<"request/post/ab_clindamicina">
+    ab_claritromicina : @http_context<"request/post/ab_claritromicina">
+    ab_ciprofloxacino : @http_context<"request/post/ab_ciprofloxacino">
+    ab_meropenem : @http_context<"request/post/ab_meropenem">
+    ab_vancomicina : @http_context<"request/post/ab_vancomicina">
+    ab_amoxicilina : @http_context<"request/post/ab_amoxicilina">
+    ab_otro : @http_context<"request/post/ab_otro">
+    
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"tratamientoantipiretico" : tratamientoantipiretico
+        @"ap_paracetamol" : ap_paracetamol
+        @"ap_ibuprofeno" : ap_ibuprofeno
+        @"ap_acidoacetilsalicilico" : ap_acidoacetilsalicilico
+        @"ap_clonoxinatodelisina" : ap_clonoxinatodelisina
+        @"ap_naproxeno" : ap_naproxeno
+        @"ap_piroxicam" : ap_piroxicam
+        @"ap_metamizolsodico" : ap_metamizolsodico
+        @"ap_diclofenaco" : ap_diclofenaco
+        @"ap_ketorolaco" : ap_ketorolaco
+        @"ap_otro" : ap_otro
+
+        @"tratamientoantiviral" : tratamientoantiviral
+        @"av_amantadina" : av_amantadina
+        @"av_rimantadina" : av_rimantadina
+		@"av_oseltamivir" : av_oseltamivir
+		@"av_zanamivir" : av_zanamivir
+        @"av_peramivir" : av_peramivir
+        @"av_ribavirina" : av_ribavirina
+        @"av_otro" : av_otro
+
+        @"tratamientoantibiotico" : tratamientoantibiotico
+        @"ab_penicilina" : ab_penicilina
+        @"ab_dicloxacilina" : ab_dicloxacilina
+        @"ab_ampicilina" : ab_ampicilina
+        @"ab_amikacina" : ab_amikacina
+        @"ab_doxiciclina" : ab_doxiciclina
+        @"ab_cefalosporina" : ab_cefalosporina
+        @"ab_clindamicina" : ab_clindamicina
+        @"ab_claritromicina" : ab_claritromicina
+        @"ab_ciprofloxacino" : ab_ciprofloxacino
+        @"ab_meropenem" : ab_meropenem
+        @"ab_vancomicina" : ab_vancomicina
+        @"ab_amoxicilina" : ab_amoxicilina
+        @"ab_otro" : ab_otro
+
+    }    
+
+    if(fechatratamientoantipiretico != "")
+    {
+        rec<"fechatratamientoantipiretico"> : fechatratamientoantipiretico
+    }
+
+    if(fechatratamientoantiviral != "")
+    {
+        rec<"fechatratamientoantiviral"> : fechatratamientoantiviral
+    }
+
+    if(fechatratamientoantibiotico != "")
+    {
+        rec<"fechatratamientoantibiotico"> : fechatratamientoantibiotico
+    }
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

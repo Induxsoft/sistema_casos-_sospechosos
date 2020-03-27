@@ -1,0 +1,49 @@
+﻿#!
+new vmBrwCiudades
+{
+	@"show_search_bar":@false
+	@"type":"browser"
+	@"id":"vmBrwCiudades"
+	@"hidecols":""
+	//@"jsErrorHandler" : ""
+
+	member @"columns" 
+	{	
+		member @"colId"
+		{
+			@"field":	"sys_pk"
+			@"caption":	"ID"
+			@"width": 	10
+		}
+		member @"colPais"
+		{
+			@"field":	"pais_visitado"
+			@"caption":	"País al que viajó"
+			@"width": 	10
+		}		
+		member @"colCiudad"
+		{
+			@"field":	"ciudad_visitada"
+			@"caption":	"Ciudad del país al que viajó"
+			@"width": 	10
+		}
+		member @"colFechaLlegada"
+		{
+			@"field":	"fecha_llegada"
+			@"caption":	"Fecha llegada"
+			@"width": 	10
+		}
+		member @"colFechaSalida"
+		{
+			@"field":	"fecha_salida"
+			@"caption":	"Fecha de salida"
+			@"width": 	10
+		}
+		member @"colAeroLinea"
+		{
+			@"field":	"aerolinea_vuelo"
+			@"caption":	"Aerolínea/vuelo"
+			@"width": 	10
+		}
+	}
+}

@@ -1,0 +1,1855 @@
+#include "dkli.dkh"
+
+html (lang="es")
+{
+	head
+	{
+		meta(charset="utf-8") { }
+		meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no") { } 
+
+        
+		link(href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css") { }
+        link(href="css/fa/css/all.css" rel="stylesheet" id ="fontawesome-css") { }
+        
+
+		link(href="css/jquery.dataTables.css" rel="stylesheet" ) { }
+		link(href="css/datatables.min.css" rel="stylesheet" ) { }
+		link(href="css/responsive.bootstrap.min.css" rel="stylesheet" ) { }
+		link(href="css/dataTables.bootstrap.min.css" rel="stylesheet" ) { }		
+        
+		script(src="js/jquery.min.js" type="text/javascript") { $"" }
+
+		script(src="js/datatables.min.js"){ $"" }
+		script(src="js/jquery.dataTables.min.js") { $"" }
+		
+		
+		script(src="js/dataTables.responsive.min.js") { $"" }
+		script(src="js/responsive.bootstrap.min.js") { $"" }
+		
+		
+		script(src="js/popper.min.js"){ $"" }
+        script(src="js/bootstrap.min.js") { $"" }
+		
+		script(src="js/scripts.js" type="text/javascript") { $"" }
+	}
+
+	body(id="bodycovid")
+	{
+		style{
+			$"
+			#formContent 
+			{
+				-webkit-border-radius: 10px 10px 10px 10px;
+				border-radius: 10px 10px 10px 10px;
+				background: #fff;
+				padding: 30px;
+				-webkit-box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+				box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+			}
+
+			.wrapper
+			{
+				display: flex;
+				align-items: center;
+				flex-direction: column; 
+				justify-content: center;
+				min-height: 100%;
+				padding: 20px;
+			}"
+
+		}
+		div(class="modal fade" id="formAddViajes" tabindex="-1" role="dialog" "aria-labelledby"="modalforms" "aria-hidden"="true")
+		{
+			div(class= "modal-dialog modal-sm modal-dialog-centered" role ="document")
+			{
+				div(class="modal-content")
+				{
+					div(class="modal-header")
+					{
+						h5(class="modal-title"){"Viaje"}
+						button(type="button" class="close" "data-dismiss"="modal" "aria-label"="Close")
+						{
+							span ("aria-hidden"="true") {$"&times;"}
+						}
+					}
+					div(class="modal-body")
+					{
+						div(class="row")
+						{
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"País al que viajó"}}
+								input(class="form-control" type="text" id="pais_viajo")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Ciudad del país al que viajó"}}
+								input(class="form-control" type="text" id="ciudad_viajo")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Fecha llegada"}}
+								input(class="form-control" type="date" id="llegada_viajo" "data-date-format"="DD-MM-YYYY")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Fecha salida"}}
+								input(class="form-control" type="date" id="salida_viajo" "data-date-format"="DD-MM-YYYY")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Aerolinea/vuelo"}}
+								input(class="form-control" type="text" id="aerolinea_viajo")
+								
+							}
+						}
+					}
+					div(class="modal-footer")
+					{
+						button(type="button" class="btn btn-info" onclick="AddViaje();" id = "btnModalViaje") { "Aceptar"}
+						button(type="button" class="btn btn-dark" "data-dismiss"="modal" ) { "Cancelar"}
+						
+					}
+				}
+			}		
+		}
+
+		div(class="modal fade" id="formAddContactos" tabindex="-1" role="dialog" "aria-labelledby"="modalforms" "aria-hidden"="true")
+		{
+			div(class= "modal-dialog modal-sm modal-dialog-centered" role ="document")
+			{
+				div(class="modal-content")
+				{
+					div(class="modal-header")
+					{
+						h5(class="modal-title"){"Contacto"}
+						button(type="button" class="close" "data-dismiss"="modal" "aria-label"="Close")
+						{
+							span ("aria-hidden"="true") {$"&times;"}
+						}
+					}
+					div(class="modal-body")
+					{
+						div(class="row")
+						{
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Apellido Paterno"}}
+								input(class="form-control" type="text" id="primerape_contacto")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Apellido Materno"}}
+								input(class="form-control" type="text" id="segundoape_contacto")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Nombres"}}
+								input(class="form-control" type="text" id="nombre_contacto")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Sexo"}}
+								div(class="row")
+								{
+									div(class="col-6")
+									{
+										input(type="radio" name="sexocontacto" value="1" checked="checked")
+										label(class="form-check-label"){"Hombre"}
+									}
+									div(class="col-6")
+									{
+										input( type="radio" name="sexocontacto" value="2")
+										label(class="form-check-label" ){"Mujer"}
+									}												
+								}
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Edad"}}
+								input(class="form-control" type="number" id="edad_contacto")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Tipo de Contacto"}}
+								div(class="row")
+								{
+									div(class="col-6")
+									{
+										input(type="radio" name="tipocontacto" value="1" checked="checked")
+										label(class="form-check-label"){"Intradomiciliario"}
+									}
+									div(class="col-6")
+									{
+										input( type="radio" name="tipocontacto" value="2")
+										label(class="form-check-label" ){ "Extradomiciliario (Trabajo, Unidades médicas, Escuela, Mercado , Sitio de reunión, etc.)" }
+									}												
+								}
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Correo electrónico"}}
+								input(class="form-control" type="text" id="email_contacto")
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Presenta signos y sintomas"}}
+								div(class="row")
+								{
+									div(class="col-6")
+									{
+										input(type="radio" name="sintomascontacto" value="1")
+										label(class="form-check-label"){"Si"}
+									}
+									div(class="col-6")
+									{
+										input( type="radio" name="sintomascontacto" value="0" checked="checked")
+										label(class="form-check-label" ){ "No" }
+									}												
+								}
+							}
+							div(class="col-md-12 col-xl-12")
+							{
+								p{b{"Observaciones"}}
+								input(class="form-control" type="text" id="observaciones_contacto")
+							}
+						}
+					}
+					div(class="modal-footer")
+					{
+						button(type="button" class="btn btn-info" onclick="AgregarContacto();" id = "btnModalContactos") { "Aceptar"}
+						button(type="button" class="btn btn-dark" "data-dismiss"="modal" id = "btn-contactCancel") { "Cancelar"}
+						
+					}
+				}
+			}		
+		}
+
+        #!
+        #include "functions.dkh"
+		#include "serialize.dkh"
+		
+        #include "html.bs.browsers.dkl"
+        #include "html.bs.crud.dkl"
+        #include "html.bs.forms.dkl"
+		
+		#include "vmBrwCiudades.dkl"
+		#include "vmBrwContactos.dkl"
+
+		existopt = field.exist(@http_context, "request/get/opt")
+		
+		if(existopt)
+		{
+			##
+				div(class="container")
+				{
+					div(class=" row")
+					{
+						div(class="col-md-12 text-center")
+						{
+							h3{"Formato de Estudio de Caso Sospechoso de COVID-19"}
+							h4{"Estudio epidemilógico de caso sospechoso de COVID-19"}
+							div(class="col-12")
+							{
+								div(class="row")
+								{
+									div(class="col-4")
+									{
+										a(type="button" class="btn btn-danger float-right" href="https://devkron.com/covid19/index.dkl") { "Abandonar"}
+									}																	
+									div(class="col-4")
+									{
+									h5{"FOLIO: " font(color="red" id="headIdentificador"){"Sin asignar" }" "}
+
+									}
+									div(class="col-4")
+									{
+										button(type="button" class="btn btn-success float-left" id="btnPDF" onclick='pdf();' disabled="disabled") { "Imprimir PDF"}
+									}	
+								}					
+							}
+							
+							
+							br{""}
+						}
+					}
+					
+					div(id="accordion")
+					{
+						div(class="card")
+						{
+							div(class="card-header" id="heading1")
+							{
+								h5(class="mb-0")
+								{
+										"DATOS DE LA UNIDAD NOTIFICANTE"
+								}
+							}
+							
+							div(id="collapse1" class="collapse show" "aria-labelledby"="heading1" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Entidad"}}
+											input(class="form-control" type="text" id="entidad_notificante")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Jurisdicción"}}
+											input(class="form-control" type="text" id="jurisdiccion_notificante")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Municipio"}}
+											input(class="form-control" type="text" id="municipio_notificante")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Nombre de la unidad médica"}}
+											input(class="form-control" type="text" id="nombre_unidad_medica_notificante")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Institución"}}
+											input(class="form-control" type="text" id="institucion_notificante")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"CLUES"}}
+											input(class="form-control" type="text" id="clues_notificante")
+										}
+									}
+									br{""}
+									
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(1);') { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading2")
+							{
+								h5(class="mb-0")
+								{
+									"DATOS GENERALES"
+								}
+							}
+							
+							div(id="collapse2" class="collapse" "aria-labelledby"="heading2" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-12")
+										{
+											
+											p{b{"Fecha de ingreso a la unidad"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_ingreso_generales")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Primer apellido"}}
+											input(class="form-control" type="text" id="primer_apellido_generales")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Segundo apellido"}}
+											input(class="form-control" type="text" id="segundo_apellido_generales")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Nombres"}}
+											input(class="form-control" type="text" id="nombres_generales")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12")
+										{
+											p{b{"Fecha de nacimiento"}}
+											div(class="row")
+											{
+												div(class="col-3")
+												{
+												input(class="form-control" type="number" min="1" max="31" placeholder="Día" id="dia_fecha_nacimiento")
+												}
+												div(class="col-3")
+												{
+												input(class="form-control" type="number" min="1" max="12" placeholder="Mes" id="mes_fecha_nacimiento")
+												}
+												div(class="col-3")
+												{
+												input(class="form-control" type="number" min="1980" max="2020" placeholder="Año" id="anio_fecha_nacimiento")
+												}
+												div(class="col-3")
+												{
+												input(class="form-control" type="number" min="1" max="120" placeholder="Edad" id="edad")
+												}
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-3")
+										{
+											p{b{"CURP"}}
+											input(class="form-control" type="text" id="curp")
+										}
+										br{""}
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"Sexo"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="sexos" value="1" checked="checked")
+													label(class="form-check-label"){"Hombre"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="sexos" value="2")
+													label(class="form-check-label" ){"Mujer"}
+												}												
+											}
+										}
+										br{""}
+										
+										div(class="col-md-6 col-xl-4" style="display:none;" id="estaembarazada")
+										{
+											p{b{"¿Está embarazada?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="embarazada" value="1")
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input(type="radio" name="embarazada" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="mesesembarazos" style="display:none;")
+										{
+											p{b{"Meses de embarazo"}}
+											input(class="form-control" type="number" min="1" max="9" id="meses_embarazo")
+										}
+										br{""}
+										
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"¿Se encuentra en periodo de puerperio?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="puerperio" value="1")
+													label(class="form-check-label"){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input(type="radio" name="puerperio" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="diaspuerperio" style="display:none;")
+										{
+											p{b{"Días de puerperio"}}
+											input(class="form-control" type="number" id="dias_purperio")
+										}
+										br{""}
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"Nacionalidad"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="nacionalidad" value="1" checked="checked")
+													label(class="form-check-label"){"Mexicana"}
+												}
+												div(class="col-6")
+												{
+
+													input(type="radio" name="nacionalidad" value="0")
+													label(class="form-check-label"){"Extranjera"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="paisorigen" style="display:none;")
+										{
+											p{b{"País origen"}}
+											input(class="form-control" type="text" id="dg_paisorigen")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"No. Expediente o Seguridad Social"}}
+											input(class="form-control" type="text" id="num_expediente_seguro_social")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Entidad de nacimiento"}}
+											input(class="form-control" type="text" id="entidad_nacimiento")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Entidad/Delegación de residencia"}}
+											input(class="form-control" type="text" id="entidad_delegacion_residencia")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Municipio de residencia"}}
+											input(class="form-control" type="text" id="municipio_residencia")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Localidad"}}
+											input(class="form-control" type="text" id="localidad")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Calle"}}
+											input(class="form-control" type="text" id="calle")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Número externo"}}
+											input(class="form-control" type="text"id="num_externo")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Número interno"}}
+											input(class="form-control" type="text" id="num_interno")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-8")
+										{
+											p{b{"Entre calles"}}
+											div(class="row")
+											{
+												div(class="col-5")
+												{
+													input(class="form-control" type="text" id="entrecalle1")
+												}
+												div(class="col-2 text-center")
+												{
+													p{b{"Y"}}
+												}										
+												div(class="col-5")
+												{
+													input(class="form-control" type="text" id="entrecalle2")
+												}
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Colonia"}}
+											input(class="form-control" type="text" id="colonia")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"C.P."}}
+											input(class="form-control" type="text" id="codigo_postal")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Teléfono"}}
+											input(class="form-control" type="number" id="telefono")
+										}
+										br{""}
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"¿Se reconoce como indígena?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="indigena" id="true_ind" value="1" )
+													label(class="form-check-label" for="true_ind"){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="indigena" id="false_ind" value="0" checked="checked")
+													label(class="form-check-label" for="false_ind"){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"¿Habla alguna lengua indígena?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="lenguaindigena" id="true_lengind" value="1" )
+													label(class="form-check-label" for="true_lengind"){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="lenguaindigena" id="false_lengind" value="0" checked="checked")
+													label(class="form-check-label" for="false_lengind"){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Ocupación"}}
+											input(class="form-control" type="text" id="ocupacion")
+										}
+										br{""}
+										div(class="col-md-6 col-xl-4")
+										{
+											p{b{"¿Es migrante?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="migrante" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="migrante" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}												
+											}
+										}
+										br{""}
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(2);' ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(2);') { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading3")
+							{
+								h5(class="mb-0")
+								{
+									"ANTECEDENTES EPIDEMIOLÓGICOS"
+								}
+							}
+							
+							div(id="collapse3" class="collapse" "aria-labelledby"="heading3" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-8")
+										{
+											p{b{"¿Realizó algún viaje a un país con transmisión local comunitaria "a("data-toggle"="tooltip" "data-placement"="top" title="Paises con transmisión local comunitaria: China, Hong Kong, Corea del Sur, Japón, Italia, Irán y Singapur."){"*"}" en los 14 días previos al inicio de signos y sintomas?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="transmision" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="transmision" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}												
+											}
+											
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="fechaviaje" style="display:none;")
+										{
+											p{b{"Fecha de viaje"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_viaje")
+										}
+										
+										div(class="col-md-12 col-xl-4" id="aerolinea" style="display:none;")
+										{
+											p{b{"Aerolínea / Vuelo de llegada a México"}}
+											textarea(id="txtaerolinea" class="form-control" rows="3"){""}
+											script{
+											$"
+											$(document).ready(function(){
+											{
+											$('#txtaerolinea').val('');
+											}
+											});
+											"}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="fechallegada" style="display:none;")
+										{
+											p{b{"Fecha de llegada a México"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_llegada")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Usted es residente de algún país con transmisión local comunitaria?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="residente" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="residente" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-8")
+										{
+											p{b{"Durante las 2 semanas previas al inicio de los sintomas: ¿Tuvo algún contacto con alguna persona con sintomatología respiratoria?"}}
+											div(class="row")
+											{
+												div(class="col-4")
+												{
+													input(type="radio" name="personasintomatologia" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-4")
+												{
+													input( type="radio" name="personasintomatologia" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+												div(class="col-4")
+												{
+													input( type="radio" name="personasintomatologia" value="2")
+													label(class="form-check-label"){"Se ignora"}
+												}	
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="lugarcontacto" style="display:none;")
+										{
+											p{b{"Lugar de contacto"}}
+											select(class="form-control" id="lugar_contacto_combo")
+											{
+												option(value="0"){"NA"}
+												option(value="1"){"Hogar"}
+												option(value="2"){"Área de trabajo"}
+												option(value="3"){"Área de entretenimiento social"}
+												option(value="4"){"Unidad médica"}
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Tuvo contacto con animales?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="animales" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="animales" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+												
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4" id="cualesanimales" style="display:none;")
+										{
+											p{b{"¿Cuál?"}}
+											input(class="form-control" type="text" id="cual_animal")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" id="contactoanimales" style="display:none;")
+										{
+											p{b{"¿Qué tipo de contacto tuvo?"}}
+											select(class="form-control" id="tipo_contacto_combo")
+											{
+												option(value="0"){"NA"}
+												option(value="1"){"Animales vivos"}
+												option(value="2"){"Animales muertos"}
+												option(value="3"){"Sangre"}
+												option(value="4"){"Heces"}
+												option(value="5"){"Huevo"}
+												option(value="6"){"Vísceras"}
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Visitó algún mercado, donde hubiera venta de animales?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="mercadoanimales" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="mercadoanimales" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+												
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4" id="mercadoanimales" style="display:none;")
+										{
+											p{b{"Lugar"}}
+											input(class="form-control" type="text" id="lugar_mercardo")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4" style="display:none;")
+										{
+											p{b{"Fecha"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_mercado")
+										}
+										br{""}
+										
+										
+										div(class="col-md-12 col-xl-12")
+										{
+											h5{"Antecedentes de viajes internacionales y nacionales: "}
+											p{b{"En caso afirmativo informe los países o ciudades visitados"}}
+
+											button(type="button" class="btn btn-dark" onclick='AbrirModalViajes();' style="margin:5px;") { "Agregar"}
+											button(type="button" class="btn btn-dark" onclick='EditInModalViajes();' style="margin:5px;") { "Editar seleccionado"}
+											button(type="button" class="btn btn-dark" onclick='DelModalViajes()' style="margin:5px;") { "Eliminar seleccionado"}
+											button(type="button" class="btn btn-dark" onclick='actualizarTablaViaje()' style="margin:5px;") { "Actualizar"}
+											br{""}
+											##
+											do createbrowser(vmBrwCiudades)
+											##
+										}
+										br{""}
+										div(class="col-md-12 col-xl-6")
+										{
+											p{b{"¿En los últimos 14 días, ha tenido contacto cercano "a("data-toggle"="tooltip" "data-placement"="top" title="Contacto cercano: estar a 2 metros de distancia, o dentro de la habitación o área de cuidado, de un caso por un periodo prolongado de tiemposin usar el equipo de protección personal(por ejemplo, batas, guantes, respirador desechable n95 y protección ocular); puede cuidar, vivir, visitar o compartir un área o sala de espera médica."){"**"}" con una persona con sospecha de COVID-19?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="sospecha" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="sospecha" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+												
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-6")
+										{
+											p{b{"¿En los últimos 14 días, ha tenido contacto cercano "a("data-toggle"="tooltip" "data-placement"="top" title="Contacto cercano: estar a 2 metros de distancia, o dentro de la habitación o área de cuidado, de un caso por un periodo prolongado de tiemposin usar el equipo de protección personal(por ejemplo, batas, guantes, respirador desechable n95 y protección ocular); puede cuidar, vivir, visitar o compartir un área o sala de espera médica."){"**"}" con una persona confirmada por laboratorio de COVID-19?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="confirmada" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="confirmada" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-6")
+										{
+											p{b{"¿Tuvo contacto con otras personas o familiares que hayan viajado a algún país con transmisión local comunitaria en los 14 días previos al inicio de sintomas?"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="contactotransmision" value="1" )
+													label(class="form-check-label" ){"Sí"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="contactotransmision" value="0" checked="checked")
+													label(class="form-check-label"){"No"}
+												}	
+											}
+										}
+										br{""}
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(3);') { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(3);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						
+						div(class="card")
+						{
+							div(class="card-header" id="heading4")
+							{
+								h5(class="mb-0")
+								{
+									"DATOS CLÍNICOS"
+								}
+							}
+							
+							div(id="collapse4" class="collapse" "aria-labelledby"="heading4" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Fecha de inicio de sintomas"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_inicio_sintomas")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12")
+										{
+											p{b{"¿En los últimos 14 días ha presentado los siguientes signos y sintomas?"}}
+											div(class="row" id="chksintomas")
+											{
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_fiebre")
+													label(class="form-check-label"){"Fiebre"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_tos")
+													label(class="form-check-label"){"Tos"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_dolortoracico")
+													label(class="form-check-label"){"Dolor torácico"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_dificultadrespiratoria")
+													label(class="form-check-label"){"Dificultad respiratoria"}
+												}
+												br{""}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_cefalea")
+													label(class="form-check-label"){"Cefalea"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_irritabilidad")
+													label(class="form-check-label"){"Irritabilidad"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_diarrea")
+													label(class="form-check-label"){"Diarrea"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_vomitos")
+													label(class="form-check-label"){"Vómito"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_calosfrios")
+													label(class="form-check-label"){"Calosfrios"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_dolorabdominal")
+													label(class="form-check-label"){"Dolor abdominal"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_mialgias")
+													label(class="form-check-label"){"Mialgias"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_artralgias")
+													label(class="form-check-label"){"Artralgias"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_ataqueestadogeneral")
+													label(class="form-check-label"){"Ataque al estado general"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_rinorrea")
+													label(class="form-check-label"){"Rinorrea"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_polipnea")
+													label(class="form-check-label"){"Polipnea"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_odinofagia")
+													label(class="form-check-label"){"Odinofagia"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_conjuntivitis")
+													label(class="form-check-label"){"Conjuntivitis"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_cianosis")
+													label(class="form-check-label"){"Cianosis"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_convulsiones")
+													label(class="form-check-label"){"Convulsiones"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input(class="form-control" id="dc_otrossintomas" type="text" placeholder="Otro")	
+												}
+												br{""}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_comorbilidad")
+													label(class="form-check-label"){"Co-morbilidad"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_diabetes")
+													label(class="form-check-label"){"Diabétes"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_epoc")
+													label(class="form-check-label"){"EPOC"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_asma")
+													label(class="form-check-label"){"Asma"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_inmunosupresion")
+													label(class="form-check-label"){"Inmunosupresión"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_hipertension")
+													label(class="form-check-label"){"Hypertensión"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_sida")
+													label(class="form-check-label"){"VIH/Sida"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_cardiovascular")
+													label(class="form-check-label"){"Enfermedad cardiovascular"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_obesidad")
+													label(class="form-check-label"){"Obesidad"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_insuficienciarenal")
+													label(class="form-check-label"){"Insuficiencia renal crónica"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_insuficienciahepatica")
+													label(class="form-check-label"){"Insuficiencia hepática crónica"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="dc" value="dc_tabaquismo")
+													label(class="form-check-label"){"Tabaquismo"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input(class="form-control" id="dc_otraenfermedad" type="text" placeholder="Otro")	
+												}	
+											}	
+										}
+										br{""}	
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(4);' ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(4);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						
+						div(class="card")
+						{
+							div(class="card-header" id="heading5")
+							{
+								h5(class="mb-0")
+								{
+									"DATOS DE LA UNIDAD MÉDICA"
+								}
+							}
+							
+							div(id="collapse5" class="collapse" "aria-labelledby"="heading5" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Servicio de ingreso"}}
+											input(class="form-control" type="text" id="servicio_ingreso")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Fecha de ingreso a la unidad"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_ingreso_unidad")
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"Tipo de paciente"}}
+											select(class="form-control" id="tipo_paciente_combo")
+											{
+												option(value="0"){"NA"}
+												option(value="1"){"Ambulatorio"}
+												option(value="2"){"Hospitalizado"}
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"El caso fue ingresado a la UCI"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="uci" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="uci" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"El caso fue intubado"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="intubado" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="intubado" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}												
+											}
+										}
+										br{""}
+										
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"El caso tiene diagnóstico de Neumonía Clínica"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="neumoniaclinica" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="neumoniaclinica" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"El caso tiene diagnóstico de Neumonía Radiológica"}}
+											div(class="row")
+											{
+												div(class="col-6")
+												{
+													input(type="radio" name="neumoniaradiologica" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-6")
+												{
+													input( type="radio" name="neumoniaradiologica" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}												
+											}
+										}
+										br{""}
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(5);' ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(5);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading6")
+							{
+								h5(class="mb-0")
+								{
+									"TRATAMIENTO"
+								}
+							}
+							
+							div(id="collapse6" class="collapse" "aria-labelledby"="heading6" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Recibió tratamiento antipirético / analgésico?"}}
+											div(class="row")
+											{
+												div(class="col-4")
+												{
+													input(type="radio" name="antipiretico" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-4")
+												{
+													input( type="radio" name="antipiretico" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}
+												div(class="col-4")
+												{
+													input(type="radio" name="antipiretico" value="3" )
+													label(class="form-check-label"){"Se ignora"}
+												}
+												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" style="display:none;" id="fechainicioantipiretico")
+										{
+											p{b{"Fecha de inicio del tratamiento antipirético/analgésico"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_inicio_tratamiento_analgesico")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12" style="display:none;" id="chkantipiretico")
+										{
+											p{b{"Seleccione antipirético/analgésico "a("data-toggle"="tooltip" "data-placement"="top" title="Puede marcar más de una opción de la lista siguiente"){"*"}""}}
+											div(class="row")
+											{
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_paracetamol")
+													label(class="form-check-label"){"Paracetamol"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_ibuprofeno")
+													label(class="form-check-label"){"Ibuprofeno"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_acidoacetilsalicilico")
+													label(class="form-check-label"){"Ácido acetilsalicílico"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_clonoxinatodelisina")
+													label(class="form-check-label"){"Clonoxinato de lisina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_naproxeno")
+													label(class="form-check-label"){"Naproxeno"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_piroxicam")
+													label(class="form-check-label"){"Piroxicam"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_metamizolsodico")
+													label(class="form-check-label"){"Metamizol sódico"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_diclofenaco")
+													label(class="form-check-label"){"Diclofenaco"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="ap_ketorolaco")
+													label(class="form-check-label"){"Ketorolaco"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input(class="form-control" id="ap_otro" type="text" placeholder="Otro")
+												}
+													
+											}	
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Recibió tratamiento antiviral?"}}
+											div(class="row")
+											{
+												div(class="col-4") 
+												{
+													input(type="radio" name="antiviral" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-4")
+												{
+													input( type="radio" name="antiviral" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}
+												div(class="col-4")
+												{
+													input(type="radio" name="antiviral" value="3" )
+													label(class="form-check-label"){"Se ignora"}
+												}
+												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" style="display:none;" id="fechainicioantiviral")
+										{
+											p{b{"Fecha de inicio del tratamiento antiviral"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_inicio_tratamiento_antiviral")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12" style="display:none;" id="chkantiviral")
+										{
+											p{b{"Seleccione antiviral "a("data-toggle"="tooltip" "data-placement"="top" title="Puede marcar más de una opción de la lista siguiente"){"*"}" "}}
+											div(class="row")
+											{
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_amantadina")
+													label(class="form-check-label"){"Amantadina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_rimantadina")
+													label(class="form-check-label"){"Rimantadina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_oseltamivir")
+													label(class="form-check-label"){"Oseltamivir"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_zanamivir")
+													label(class="form-check-label"){"Zanamivir"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_peramivir")
+													label(class="form-check-label"){"Peramivir"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="av" value="av_ribavirina")
+													label(class="form-check-label"){"Ribavirina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input(class="form-control" id="av_otro" type="text" placeholder="Otro")	
+												}
+													
+											}	
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Recibió tratamiento antibiótico?"}}
+											div(class="row")
+											{
+												div(class="col-4")
+												{
+													input(type="radio" name="antibiotico" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-4")
+												{
+													input( type="radio" name="antibiotico" value="2" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}
+												div(class="col-4")
+												{
+													input(type="radio" name="antibiotico" value="3" )
+													label(class="form-check-label"){"Se ignora"}
+												}
+												
+											}
+										}
+										br{""}
+										div(class="col-md-12 col-xl-4" style="display:none;" id="fechainicioantibiotico")
+										{
+											p{b{"Fecha de inicio del tratamiento antibiotico"}}
+											input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_inicio_tratamiento_antibiotico")
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12" style="display:none;" id="chkantibiotico")
+										{
+											p{b{"Seleccione antibiótico"a("data-toggle"="tooltip" "data-placement"="top" title="Puede marcar más de una opción de la lista siguiente"){"*"}""}}
+											div(class="row")
+											{
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_penicilina")
+													label(class="form-check-label"){"Penicilina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_dicloxacilina")
+													label(class="form-check-label"){"Dicloxacilina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_ampicilina")
+													label(class="form-check-label"){"Ampicilina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_amikacina")
+													label(class="form-check-label"){"Amikacina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_doxiciclina")
+													label(class="form-check-label"){"Doxiciclina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_cefalosporina")
+													label(class="form-check-label"){"Cefalosporina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_clindamicina")
+													label(class="form-check-label"){"Clindamicina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_claritromicina")
+													label(class="form-check-label"){"Claritromicina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_ciprofloxacino")
+													label(class="form-check-label"){"Ciprofloxacino"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_meropenem")
+													label(class="form-check-label"){"Meropenem"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_vancomicina")
+													label(class="form-check-label"){"Vancomicina"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ab" value="ab_amoxicilina")
+													label(class="form-check-label"){"Amoxicilina c/s AC. Clauvulánico"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input(class="form-control" type="text" id="ab_otro" placeholder="Otro")
+												}													
+											}	
+										}
+										br{""}
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(6);'  ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(6);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading7")
+							{
+								h5(class="mb-0")
+								{
+									"LABORATORIO"
+								}
+							}
+							div(id="collapse7" class="collapse" "aria-labelledby"="heading7" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-4")
+										{
+											p{b{"¿Se le tomó muestra al paciente?"}}
+											div(class="row")
+											{
+												div(class="col-4")
+												{
+													input(type="radio" name="muestrapaciente" value="1" )
+													label(class="form-check-label"){"Si"}
+												}
+												div(class="col-4")
+												{
+													input( type="radio" name="muestrapaciente" value="0" checked="checked")
+													label(class="form-check-label" ){"No"}
+												}																			
+											}
+										}
+										div(class="col-md-12 col-xl-8" style="display:none;" id="laboratoriodiagnostico")
+										{
+											p{b{"Laboratorio de diagnóstico"}}
+											input(class="form-control" type="text" id="laboratorio_diagnostico")
+										}	
+										br{""}
+										div(class="col-md-12 col-xl-12" style="display:none;" id="tipomuestra")
+										{
+											p{b{"Tipo de muestra"}}
+											p{b{"*Puede marcar más de una opción de la lista siguiente"}}
+											div(class="row")
+											{
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="tm_exudadofaringeo")
+													label(class="form-check-label"){"Exudado faringeo"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="tm_exudadonasofaringeo")
+													label(class="form-check-label"){"Exudado nasofaringeo"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="tm_lavadobronquial")
+													label(class="form-check-label"){"Lavado bronquial"}
+												}
+												div(class="col-6 col-md-3")
+												{
+													input( type="checkbox" name="ap" value="tm_biopsiadepulmon")
+													label(class="form-check-label"){"Biopsia de pulmón"}
+												}
+											}	
+										}
+										br{""}
+										div(class="col-md-12 col-xl-12" style="display:none;" id="fechasmuestra")
+										{
+											div(class="row")
+											{
+												div(class="col-md-12 col-xl-3" id="fechatomamuestra")
+												{
+													p{b{"Fecha de toma de muestra"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_toma_muestra")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-3" id="fecharecepcionmuestra")
+												{
+													p{b{"Fecha de recepción de muestra"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_recepcion_muestra")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-3" id="fechaenviomuestra")
+												{
+													p{b{"Fecha de envío de muestra"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_envio_muestra")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-3" id="fecharesultadomuestra")
+												{
+													p{b{"Fecha de resultado"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_resultado_muestra")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-3")
+												{
+													p{b{"Resultado"}}
+													input(class="form-control" type="text" id="resultado")
+												}
+												br{""}	
+											}
+										}																												
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(7);'  ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(7);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading8")
+							{
+								h5(class="mb-0")
+								{
+									"EVOLUCIÓN"
+								}
+							}
+							div(id="collapse8" class="collapse" "aria-labelledby"="heading8" "data-parent"="#accordion")
+							{
+								div(class="card-body")
+								{
+									div(class="row")
+									{
+										div(class="col-md-12 col-xl-12")
+										{		
+											p{b{"Evolución"}}
+											div(class="row")
+											{
+												div(class="col-md-12 col-xl-12")
+												{
+													select(class="form-control" id="evolucion_combo")
+													{
+														option(value="0"){"NA"}
+														option(value="1"){"Alta por mejoría"}
+														option(value="2"){"En tratamiento"}
+														option(value="3"){"Caso grave"}
+														option(value="4"){"Caso no grave"}
+														option(value="5"){"Defunción"}
+													}
+												}																					
+											}
+											br{""}
+											div(class="row" id="fechasevolucion")
+											{
+												div(class="col-md-12 col-xl-4")
+												{
+													p{b{"Fecha de ingreso"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_ingreso")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-4")
+												{
+													p{b{"Fecha de defunción"}}
+													input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fechadefuncion")
+												}
+												br{""}
+												div(class="col-md-12 col-xl-4" )
+												{
+													p{b{"Folio de certificado de defunción"}}
+													input(class="form-control" type="text" id="foliocerficiadodefuncion")
+												}
+											}
+											br{""}
+											div(class="row" id="checkcovid19")
+											{
+												div(class="col-md-12 col-xl-12")
+												{
+													input( type="checkbox" name="covid19" value="defuncioncovid")
+													label(class="form-check-label"){"Defunción por Covid-19"}
+												}
+											}											
+										}																																			
+									}
+									br{""}
+									button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(8);'  ) { "Atrás"}
+									button(type="button" class="btn btn-success" onclick='CollapsesbyID(8);' ) { "Avanzar y guardar"}
+								}
+							}
+						}
+						div(class="card")
+						{
+							div(class="card-header" id="heading9")
+							{
+								h5(class="mb-0")
+								{
+									"CONTACTOS"
+								}
+								div(id="collapse9" class="collapse" "aria-labelledby"="heading9" "data-parent"="#accordion")
+								{
+									div(class="card-body")
+									{
+										div(class="row")
+										{
+											div(class="col-md-12 col-xl-12")
+											{
+												button(type="button" class="btn btn-primary" onclick='AbrirModalContactos();' style="margin:5px;") { "Agregar"}
+												button(type="button" class="btn btn-dark" onclick='EditInModalContactos();' style="margin:5px;") { "Editar seleccionado"}
+												button(type="button" class="btn btn-dark" onclick='DelModalContactos()' style="margin:5px;") { "Eliminar seleccionado"}
+												button(type="button" class="btn btn-dark" onclick='actualizarTablaContacto()' style="margin:5px;") { "Actualizar"}
+
+												br{""}
+												##
+												do createbrowser(vmBrwContactos)
+												##
+											}
+											div(class="col-md-12 col-xl-12")
+											{
+												p{b{"* ID = Intradomiciliario, ED = Extradomiciliario (Trabajo, Unidades médicas, Escuela, Mercado , Sitio de reunión, etc.)"}}
+												p{b{"Nota: En caso de algún contacto cumpla con la definición operacional de caso sospechoso, realizar el estudio epidemiológico de caso sospechoso."}}
+											}
+											div(class="col-md-12 col-xl-6")
+											{
+												p{b{"Nombre y cargo de quien elaboró"}}
+												input(class="form-control" type="text" id="nombre_elaboro")
+											}
+											div(class="col-md-12 col-xl-6")
+											{
+												p{b{"Nombre y cargo de quien autorizó"}}
+												input(class="form-control" type="text" id="nombre_autorizo")
+											}
+											div(class="col-md-12 col-xl-6")
+											{
+												p{b{"Contacto, Teléfono y correo electrónico"}}
+												input(class="form-control" type="text" id="contacto_elaboro")
+											}
+											div(class="col-md-12 col-xl-6")
+											{
+												p{b{"Fecha de elaboración"}}
+												input(class="form-control" type="date" "data-date-format"="DD-MM-YYYY" id="fecha_elaboro")
+											}																																		
+										}
+										br{""}
+
+										button(type="button" class="btn btn-secondary" onclick='DecollapsesbyID(9);') { "Atrás"}
+										button(type="button" class="btn btn-success" onclick='CollapsesbyID(9);') { "Guardar información"}
+										
+									}
+								}
+								
+							}
+							
+						}
+					}
+					
+				}
+			##
+		}
+		else{
+		#$
+			div(class="container")
+			{
+				div(class="wrapper " )
+				{
+					div(class="row" id="formContent")
+					{
+					
+						div(class="col-12")
+						{
+							
+							h1(class="text-center"){ "COVID-19"}
+							div(class="row")
+							{
+								div(class="col-6")
+								{
+									a(href="?opt=new" class="btn btn-info float-right" style="margin: 5px;") { p(class="text-center") { "Nuevo caso" } }
+								}
+								div(class="col-6")
+								{
+									a(href="?opt=edit" class="btn btn-info float-left" style="margin: 5px;") { p(class="text-center" ) { "Actualizar caso" } }
+								}
+								
+								
+							}
+							br{""}
+							center{ a(class="btn" onclick="window.open('https://induxsoft.net/','_blank');"){img(src="https://induxsoft.net/img/Logo.png" class="img-fluid"){} } }
+						} 
+						
+						div (class="col-12" style="display: block;")
+						{ 
+							br{""}
+
+							div(class="row")
+							{
+								div(class="col-12 col-md-3")
+								{
+									a(href="descargas/covid19.rar" class="btn btn-link" style="display: flex;align-items: center;justify-content: center;") { p(class="text-center") { "Descargar código fuente" } }
+								}
+								div(class="col-12 col-md-3")
+								{
+									a(href="descargas/Devkron.rar" class="btn btn-link" style="display: flex;align-items: center;justify-content: center;") { p(class="text-center" ) { "Descargar Devkron" } }
+								}
+								div(class="col-12 col-md-3")
+								{
+									a(href="https://devkron.org/doc/funciones/implementacion/" class="btn btn-link" style="display: flex;align-items: center;justify-content: center;") { p(class="text-center" ) { "Configuración Devkron con IIS" } }
+								}
+								div(class="col-12 col-md-3")
+								{
+									a(href="https://devkron.org/" class="btn btn-link" style="display: flex;align-items: center;justify-content: center;") { p(class="text-center" ) { "Documentación Devkron" } }
+								}
+							}
+						}
+					}
+				}
+			}
+		
+		##
+				
+		}
+	
+            #include "html.bs.utils.dkl"
+	}
+}

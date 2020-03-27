@@ -1,0 +1,86 @@
+#include "dkli.dkh"
+#!
+module "updateLaboratorio"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+    
+    muestrapaciente : @http_context<"request/post/muestrapaciente">
+    laboratoriodiagnostico : @http_context<"request/post/laboratorio_diagnostico">
+    tm_exudadofaringeo : @http_context<"request/post/tm_exudadofaringeo">
+    tm_exudadonasofaringeo : @http_context<"request/post/tm_exudadonasofaringeo">
+    tm_lavadobronquial : @http_context<"request/post/tm_lavadobronquial">
+    tm_biopsiapulmon : @http_context<"request/post/tm_biopsiadepulmon">
+    fechatomamuestra : @http_context<"request/post/fecha_toma_muestra">
+    fechaenviomuestra : @http_context<"request/post/fecha_envio_muestra">
+    fecharecepcionmuestra : @http_context<"request/post/fecha_recepcion_muestra">
+    fecharesultado : @http_context<"request/post/fecha_resultado_muestra">
+    resultado : @http_context<"request/post/resultado">
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"muestrapaciente" : muestrapaciente
+        @"laboratoriodiagnostico" : laboratoriodiagnostico
+        @"tm_exudadofaringeo" : tm_exudadofaringeo
+        @"tm_exudadonasofaringeo" : tm_exudadonasofaringeo
+        @"tm_lavadobronquial" : tm_lavadobronquial
+        @"tm_biopsiapulmon" : tm_biopsiapulmon
+        @"resultado" : resultado        
+    }    
+
+    if(fechatomamuestra != "")
+    {
+        rec<"fechatomamuestra"> : fechatomamuestra
+    }
+
+    if(fechaenviomuestra != "")
+    {
+        rec<"fechaenviomuestra"> : fechaenviomuestra
+    }
+
+    if(fecharecepcionmuestra != "")
+    {
+        rec<"fecharecepcionmuestra"> : fecharecepcionmuestra
+    }
+
+    if(fecharesultado != "")
+    {
+        rec<"fecharesultado"> : fecharesultado
+    }
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

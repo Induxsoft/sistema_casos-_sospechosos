@@ -1,0 +1,100 @@
+#include "dkli.dkh"
+#!
+module "updateAntecedentes"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    viajetranslocalcom : @http_context<"request/post/viajetranslocalcom">
+    residentetranlocalcom : @http_context<"request/post/residentetranlocalcom">
+    fechaviajetranslocalcom : @http_context<"request/post/fechaviajetranslocalcom">
+    aerolineaviajetranslocalcom : @http_context<"request/post/aerolineaviajetranslocalcom">
+    fechallegadaviajetranslocalcom : @http_context<"request/post/fechallegadaviajetranslocalcom">
+    contactopersonasintomas : @http_context<"request/post/contactopersonasintomas">
+    lugarcontactopersonasintomas : @http_context<"request/post/lugarcontactopersonasintomas">
+    contactoanimales : @http_context<"request/post/contactoanimales">
+    contactoanimalescual : @http_context<"request/post/contactoanimalescual">
+    tipocontactoanimales : @http_context<"request/post/tipocontactoanimales">
+    visitamercadoanimales : @http_context<"request/post/visitamercadoanimales">
+    lugarmercadoanimales : @http_context<"request/post/lugarmercadoanimales">
+    fechamercadoanimales : @http_context<"request/post/fechamercadoanimales">    
+    diascontactosospechoso : @http_context<"request/post/diascontactosospechoso">
+    diascontactoconfirmado : @http_context<"request/post/diascontactoconfirmado">
+    diascontactoviajado : @http_context<"request/post/diascontactoviajado">
+
+	pk : @http_context<"request/post/pk">
+
+    ref now = dbr.sql("now()")
+
+    
+    
+    new rec
+    {
+        @"viajetranslocalcom" : viajetranslocalcom
+        @"residentetranlocalcom" : residentetranlocalcom
+        @"aerolineaviajetranslocalcom" : aerolineaviajetranslocalcom
+        @"contactopersonasintomas" : contactopersonasintomas
+        @"lugarcontactopersonasintomas" : lugarcontactopersonasintomas
+        @"contactoanimales" : contactoanimales
+        @"contactoanimalescual" : contactoanimalescual
+        @"tipocontactoanimales" : tipocontactoanimales
+        @"visitamercadoanimales" : visitamercadoanimales
+        @"lugarmercadoanimales" : lugarmercadoanimales
+        @"14diascontactosospechoso" : diascontactosospechoso
+        @"14diascontactoconfirmado" : diascontactoconfirmado
+        @"14diascontactoviajado" : diascontactoviajado      
+        @"sys_pk" : pk
+    }
+
+    if(fechallegadaviajetranslocalcom != "")
+    {
+        rec<"fechallegadaviajetranslocalcom"> : fechallegadaviajetranslocalcom
+    }
+    if(fechamercadoanimales != "")
+    {
+        rec<"fechamercadoanimales"> : fechamercadoanimales
+    }
+    if(fechaviajetranslocalcom != "")
+    {
+        rec<"fechaviajetranslocalcom"> : fechaviajetranslocalcom
+    }
+	
+	 text queryrecver
+    {$"
+       select sys_recver from covid.estudio_epidemiologico where sys_pk=@sys_pk;
+    "}
+
+    recver = dbr.num(db,queryrecver,rec)
+
+    using rec
+    {
+        @"sys_recver" : recver
+    }
+
+    do dbr.update(db,"covid.estudio_epidemiologico",rec, "sys_pk=@sys_pk",rec)
+
+    new dx
+    {
+        @"success":@true
+        @"data": "Actualizado con éxito"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+     d=to.json(dx)
+     do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

@@ -1,0 +1,42 @@
+#include "dkli.dkh"
+#!
+module "updateViaje"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    do dbr.delete(db, "covid.fk_paisesvisitados","sys_pk=@sys_pk", recparam)
+
+    new dx
+    {
+        @"success":@true
+        @"data": "Eliminado correctamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+    
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

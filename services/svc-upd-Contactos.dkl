@@ -1,0 +1,60 @@
+#include "dkli.dkh"
+#!
+module "updateContactos"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+    
+    nombreycargoelaboro : @http_context<"request/post/nombre_elaboro">
+    nombreycargoautorizo : @http_context<"request/post/nombre_autorizo">
+    contacto_elaboro : @http_context<"request/post/contacto_elaboro">
+    fecha_elaboro : @http_context<"request/post/fecha_elaboro">
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"nombreycargoelaboro" : nombreycargoelaboro     
+        @"nombreycargoautorizo" : nombreycargoautorizo
+        @"contactoelaboro" : contacto_elaboro
+    }    
+
+    if(fecha_elaboro != "")
+    {
+        rec<"fechaelaboracion"> : fecha_elaboro
+    }    
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente, el número de folio es: " + sys_pk
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

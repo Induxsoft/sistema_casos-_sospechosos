@@ -1,0 +1,66 @@
+#include "dkli.dkh"
+#!
+module "updateUnidadMedica"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    servicioingreso : @http_context<"request/post/servicioingreso">
+    tipopaciente : @http_context<"request/post/tipopaciente">
+    fechadeingresounidad : @http_context<"request/post/fechadeingresounidad">
+    casoingresadouci : @http_context<"request/post/casoingresadouci">
+    casointubado : @http_context<"request/post/casointubado">
+    neumoniaclinica : @http_context<"request/post/neumoniaclinica">
+    neumoniaradiologica : @http_context<"request/post/neumoniaradiologica">    
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"servicioingreso" : servicioingreso
+        @"tipopaciente" : tipopaciente
+        @"casoingresadouci" : casoingresadouci
+        @"casointubado" : casointubado
+        @"neumoniaclinica" : neumoniaclinica
+        @"neumoniaradiologica" : neumoniaradiologica
+    }    
+
+    if(fechadeingresounidad != "")
+    {
+        rec<"fechadeingresounidad"> : fechadeingresounidad
+    }
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

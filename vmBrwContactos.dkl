@@ -1,0 +1,73 @@
+﻿#!
+new vmBrwContactos
+{
+	@"show_search_bar":@false
+	@"type":"browser"
+	@"id":"vmBrwContactos"
+	@"hidecols":""
+	//@"jsErrorHandler" : ""
+
+	member @"columns" 
+	{	
+		member @"colId"
+		{
+			@"field":	"sys_pk"
+			@"caption":	"ID"
+			@"width": 	10
+		}
+		member @"colPrimerApe"
+		{
+			@"field":	"primerapellido"
+			@"caption":	"Apellido paterno"
+			@"width": 	10
+		}	
+		member @"colSegundoApe"
+		{
+			@"field":	"segundoapellido"
+			@"caption":	"Apellido materno"
+			@"width": 	10
+		}	
+		member @"colNombre"
+		{
+			@"field":	"nombres"
+			@"caption":	"Nombre"
+			@"width": 	10
+		}		
+		member @"colSexo"
+		{
+			@"field":	"sexo"
+			@"caption":	"Sexo"
+			@"width": 	10
+		}
+		member @"colEdad"
+		{
+			@"field":	"edad"
+			@"caption":	"Edad"
+			@"width": 	10
+		}
+		member @"colTipoContacto"
+		{
+			@"field":	"tipo_contacto"
+			@"caption":	"Tipo de contacto (ID o ED)*"
+			@"width": 	10
+		}
+		member @"colCorreo"
+		{
+			@"field":	"correo"
+			@"caption":	"Correo electrónico"
+			@"width": 	10
+		}
+		member @"colSintomas"
+		{
+			@"field":	"sintomas"
+			@"caption":	"Presenta signos y sintomas"
+			@"width": 	10
+		}
+		member @"colObservaciones"
+		{
+			@"field":	"observaciones"
+			@"caption":	"Observaciones"
+			@"width": 	10
+		}
+	}
+}

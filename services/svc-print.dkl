@@ -1,0 +1,1172 @@
+#include "dkli.dkh"
+#!
+module "generatedocument"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+    #include "functions_Nexmo.dkh"
+	
+	 sys_pk : @http_context<"request/post/pk">
+	
+    qname = "epifania@induxsoft"
+
+    Regresafecha :: &miobjfecha
+    {
+        mivalidadordefecha = date_str(miobjfecha,"dd-MM-yyyy")
+       if(mivalidadordefecha == "01-01-0001")
+        {
+            mivalidadordefecha=""
+        }
+        return mivalidadordefecha
+    }
+
+  
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    ref @db = dbr.open(qname)
+
+    ref data = dbr.rec(@db, "SELECT * FROM covid.estudio_epidemiologico WHERE sys_pk = @sys_pk;", recparam)
+    ref datosviajes = dbr.table(@db,"SELECT * FROM covid.fk_paisesvisitados where fk_ee = @sys_pk;",recparam)
+    ref datoscontacto = dbr.table(@db,"SELECT * FROM covid.fk_contactos where fk_ee = @sys_pk;",recparam)
+
+     do dbr.close(@db) 
+
+    plantillaxml = file.rtext("E:\\devkron_site\\covid19\\ImpresionDePlantillas\\XmlCovid19.xml")
+      
+    //Empieza proceso de replace
+
+    //Notificante
+        plantillaxml = replace(plantillaxml,"@entidad",field.dstr(data,'entidad',''))        
+    plantillaxml = replace(plantillaxml,"@jurisdiccion",field.dstr(data,'jurisdiccion',''))    
+    plantillaxml = replace(plantillaxml,"@municipio",field.dstr(data,'municipio',''))    
+    plantillaxml = replace(plantillaxml,"@nombreunidadmedica",field.dstr(data,'nombreunidadmedica',''))    
+    plantillaxml = replace(plantillaxml,"@institucion",field.dstr(data,'institucion',''))    
+    plantillaxml = replace(plantillaxml,"@clues",field.dstr(data,'clues',''))    
+
+    //GeneralRegresa
+    plantillaxml = replace(plantillaxml,"@fechaingresounidad", Regresafecha(str2dt(field.str(data,'fechaingresounidad'))))
+    //ref miobjfecha = str2dt(field.str(data,'fechaingresounidad'))
+    //mivalidadordefecha = date_str(miobjfecha,"dd-MM-yyyy")
+
+   // plantillaxml = replace(plantillaxml,"@fechaingresounidad",mivalidadordefecha)
+    plantillaxml = replace(plantillaxml,"@primerapellido",field.dstr(data,'primerapellido',''))    
+    plantillaxml = replace(plantillaxml,"@segundoapellido",field.dstr(data,'segundoapellido',''))    
+    plantillaxml = replace(plantillaxml,"@nombres",field.dstr(data,'nombres',''))    
+    plantillaxml = replace(plantillaxml,"@curp",field.dstr(data,'curp',''))    
+  
+
+     switch field.dstr(data,'sexo','')
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@sexoHombregeneral","X")    
+                plantillaxml = replace(plantillaxml,"@sexoMujergeneral","")    
+         case "2"
+                plantillaxml = replace(plantillaxml,"@sexoHombregeneral","")    
+                plantillaxml = replace(plantillaxml,"@sexoMujergeneral","X")    
+     }
+
+    plantillaxml = replace(plantillaxml,"@nexpedientesegsocial",field.dstr(data,'nexpedientesegsocial',''))    
+    plantillaxml = replace(plantillaxml,"@telefonogeneral",field.dstr(data,'telefono',''))    
+    plantillaxml = replace(plantillaxml,"@ocupaciongeneral",field.dstr(data,'ocupacion',''))    
+
+    //Purperio
+    switch field.dstr(data,'puerperio','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Purperiosi","")    
+                plantillaxml = replace(plantillaxml,"@Purperiono","X") 
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Purperiosi","X")    
+                plantillaxml = replace(plantillaxml,"@Purperiono","")   
+     }   
+    plantillaxml = replace(plantillaxml,"@Purperiodias","")    
+    //FechaNacimiento
+    plantillaxml = replace(plantillaxml,"@FechaNacimientodia",field.dstr(data,'fechanacimientodia',''))    
+    plantillaxml = replace(plantillaxml,"@FechaNacimientomes",field.dstr(data,'fechanacimientomes',''))    
+    plantillaxml = replace(plantillaxml,"@FechaNacimientonio",field.dstr(data,'fechanacimientoanio',''))    
+    plantillaxml = replace(plantillaxml,"@FechaNacimientoedad",field.dstr(data,'edad',''))  
+
+    //Embarazo
+    switch field.dstr(data,'embarazo','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Embarazosi","")    
+                plantillaxml = replace(plantillaxml,"@Embarazono","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Embarazosi","X")    
+                plantillaxml = replace(plantillaxml,"@Embarazono","")    
+     }          
+    plantillaxml = replace(plantillaxml,"@Embarazomeses",field.dstr(data,'mesesembarazo',''))    
+
+    //Nacionalidad
+     switch field.dstr(data,'nacionalidad','1')
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Nacionalidadmexicano","X")    
+                plantillaxml = replace(plantillaxml,"@Nacionalidadextranjero","")    
+         case "2"
+                plantillaxml = replace(plantillaxml,"@Nacionalidadmexicano","")    
+                plantillaxml = replace(plantillaxml,"@Nacionalidadextranjero","X")    
+     } 
+    plantillaxml = replace(plantillaxml,"@Nacionalidadpais",field.dstr(data,'paisorigen',''))   
+
+    //Residencia 
+    plantillaxml = replace(plantillaxml,"@Residenciaentidad",field.dstr(data,'entidadnacimiento',''))    
+    plantillaxml = replace(plantillaxml,"@Residenciadelegacion",field.dstr(data,'entidadresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Residenciamunicipio",field.dstr(data,'municipioresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Residencialocalidad",field.dstr(data,'localidadresidencia',''))    
+
+    //Direccion
+    plantillaxml = replace(plantillaxml,"@Direccioncalle",field.dstr(data,'calleresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Direccionnumeroexterior",field.dstr(data,'numeroexternoresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Direccionnumerointerno",field.dstr(data,'numerointernoresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Direccionentrecalle1",field.dstr(data,'entrecallesresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Direccionentrecalle2",field.dstr(data,'entrecallesresidencia2',''))    
+    plantillaxml = replace(plantillaxml,"@Direccioncolonia",field.dstr(data,'coloniaresidencia',''))    
+    plantillaxml = replace(plantillaxml,"@Direccioncodigopostal",field.dstr(data,'codigopostalresidencia',''))    
+    
+
+    //Indigena
+      switch field.dstr(data,'esindigena','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Indigenasi","")    
+                plantillaxml = replace(plantillaxml,"@Indigenano","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Indigenasi","X")    
+                plantillaxml = replace(plantillaxml,"@Indigenano","")  
+     }    
+
+    //LenguaIndigena
+      switch field.dstr(data,'lenguaindigena','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@LenguaIndigenasi","")    
+                plantillaxml = replace(plantillaxml,"@LenguaIndigenano","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@LenguaIndigenasi","X")    
+                plantillaxml = replace(plantillaxml,"@LenguaIndigenano","")    
+     }    
+
+    //Migrante
+      switch field.dstr(data,'esmigrante','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Migrantesi","")    
+                plantillaxml = replace(plantillaxml,"@Migranteno","X")   
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Migrantesi","X")    
+                plantillaxml = replace(plantillaxml,"@Migranteno","")   
+     }     
+    
+
+    //ViajeLocal
+      switch field.dstr(data,'viajetranslocalcom','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ViajeLocalsi","")    
+                plantillaxml = replace(plantillaxml,"@ViajeLocalno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ViajeLocalsi","X")    
+                plantillaxml = replace(plantillaxml,"@ViajeLocalno","")  
+     }      
+    plantillaxml = replace(plantillaxml,"@ViajeLocalfechaviaje",field.dstr(data,'fechaviajetranslocalcom',''))    
+    plantillaxml = replace(plantillaxml,"@ViajeLocalaerolinea",field.dstr(data,'aerolineaviajetranslocalcom',''))    
+    plantillaxml = replace(plantillaxml,"@ViajeLocalfecharegreso",field.dstr(data,'fechallegadaviajetranslocalcom',''))    
+
+    //ResidenteLocal
+      switch field.dstr(data,'residentetranlocalcom','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ResidenteLocalsi","")    
+                plantillaxml = replace(plantillaxml,"@ResidenteLocalno","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ResidenteLocalsi","X")    
+                plantillaxml = replace(plantillaxml,"@ResidenteLocalno","")
+     }        
+
+    //Contacto
+      switch field.dstr(data,'contactopersonasintomas','2')
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Contactosi","x")    
+                plantillaxml = replace(plantillaxml,"@Contactono","")    
+                plantillaxml = replace(plantillaxml,"@Contactoseignora","") 
+         case "2"
+                plantillaxml = replace(plantillaxml,"@Contactosi","")    
+                plantillaxml = replace(plantillaxml,"@Contactono","x")    
+                plantillaxml = replace(plantillaxml,"@Contactoseignora","") 
+         case "3"
+                plantillaxml = replace(plantillaxml,"@Contactosi","")    
+                plantillaxml = replace(plantillaxml,"@Contactono","")    
+                plantillaxml = replace(plantillaxml,"@Contactoseignora","X")                 
+     }          
+    plantillaxml = replace(plantillaxml,"@Contactolugar",field.dstr(data,'lugarcontactopersonasintomas',''))    
+
+    //Animal    
+      switch field.dstr(data,'residentetranlocalcom','')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Animalsi","")    
+                plantillaxml = replace(plantillaxml,"@Animalno","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Animalsi","X")    
+                plantillaxml = replace(plantillaxml,"@Animalno","")
+     }         
+    plantillaxml = replace(plantillaxml,"@Animalcual",field.dstr(data,'contactoanimalescual',''))    
+    plantillaxml = replace(plantillaxml,"@Animaltipo",field.dstr(data,'tipocontactoanimales',''))    
+
+    //Mercado
+      switch field.dstr(data,'residentetranlocalcom','')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Mercadosi","")    
+                plantillaxml = replace(plantillaxml,"@Mercadono","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Mercadosi","X")    
+                plantillaxml = replace(plantillaxml,"@Mercadono","")
+     }           
+    plantillaxml = replace(plantillaxml,"@Mercadolugar",field.dstr(data,'lugarmercadoanimales',''))    
+    plantillaxml = replace(plantillaxml,"@Mercadofecha",field.dstr(data,'fechamercadoanimales',''))    
+
+    //Viaje iteracion-------------------------------------
+
+
+        iteracionviaje = "<Viajes>"
+
+        for i=0;i<table.rows(datosviajes)
+        {
+        iteracionviaje = iteracionviaje + "<Viaje nacional=\"Viajenacional\" internacional=\"Viajeinternacional\" pais = \"" + cell.strc(datosviajes, i, "pais_visitado") + "\" ciudad = \"" + cell.strc(datosviajes, i, "ciudad_visitada") + "\" fechallegada = \"" + Regresafecha(str2dt(cell.strc(datosviajes, i, "fecha_llegada"))) + "\" fechasalida = \"" + Regresafecha(str2dt(cell.strc(datosviajes, i, "fecha_salida"))) + "\" aerolinea = \"" + cell.strc(datosviajes, i, "aerolinea_vuelo")+ "\" ></Viaje> "//+"\r\n"     
+        }
+    //    iteracionviaje =  datosviajes.trim("\r\n"
+        iteracionviaje = iteracionviaje + "</Viajes>"
+
+    plantillaxml = replace(plantillaxml,"</Viajes>", iteracionviaje)    
+
+    //plantillaxml = replace(plantillaxml,"@Viajenacional","")    
+    //plantillaxml = replace(plantillaxml,"@Viajeinternacional","")    
+
+    //ContactoSospechoso
+      switch field.dstr(data,'14diascontactosospechoso','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ContactoSospechososi","")    
+                plantillaxml = replace(plantillaxml,"@ContactoSospechosono","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ContactoSospechososi","X")    
+                plantillaxml = replace(plantillaxml,"@ContactoSospechosono","")
+     }        
+    
+    //ContactoConfirmado
+      switch field.dstr(data,'14diascontactoconfirmado','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ContactoConfirmadosi","")    
+                plantillaxml = replace(plantillaxml,"@ContactoConfirmadono","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ContactoConfirmadosi","X")    
+                plantillaxml = replace(plantillaxml,"@ContactoConfirmadono","")
+     }    
+    
+
+    //ContactoViajantes
+      switch field.dstr(data,'14diascontactoviajado','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ContactoViajantessi","")    
+                plantillaxml = replace(plantillaxml,"@ContactoViajantesno","X") 
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ContactoViajantessi","X")    
+                plantillaxml = replace(plantillaxml,"@ContactoViajantesno","") 
+     }       
+
+    //Clinico
+    plantillaxml = replace(plantillaxml,"@Clinicofechasintomas",field.dstr(data,'dc_fechainiciosintomas',''))    
+
+    //Sintomas
+        //Fiebre
+      switch field.dstr(data,'dc_fiebre','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Fiebresi","")    
+                plantillaxml = replace(plantillaxml,"@Fiebreno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Fiebresi","X")    
+                plantillaxml = replace(plantillaxml,"@Fiebreno","")  
+     }            
+
+        //Tos
+      switch field.dstr(data,'dc_tos','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Tossi","")    
+                plantillaxml = replace(plantillaxml,"@Tosno","X") 
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Tossi","X")    
+                plantillaxml = replace(plantillaxml,"@Tosno","") 
+     }             
+        //DolorToracico
+      switch field.dstr(data,'dc_dolortoracico','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@DolorToracicosi","")    
+                plantillaxml = replace(plantillaxml,"@DolorToracicono","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@DolorToracicosi","X")    
+                plantillaxml = replace(plantillaxml,"@DolorToracicono","")    
+     }         
+
+        //DificultadRespiratoria
+      switch field.dstr(data,'dc_dificultadrespiratoria','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@DificultadRespiratoriasi","")    
+                plantillaxml = replace(plantillaxml,"@DificultadRespiratoriano","X") 
+         case "1"
+                plantillaxml = replace(plantillaxml,"@DificultadRespiratoriasi","X")    
+                plantillaxml = replace(plantillaxml,"@DificultadRespiratoriano","") 
+     }             
+
+        //Cefalea
+      switch field.dstr(data,'dc_cefalea','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Cefaleasi","")    
+                plantillaxml = replace(plantillaxml,"@Cefaleano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Cefaleasi","X")    
+                plantillaxml = replace(plantillaxml,"@Cefaleano","")    
+     }                     
+
+        //Irritabilidad
+      switch field.dstr(data,'dc_irritabilidad','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Irritabilidadsi","")    
+                plantillaxml = replace(plantillaxml,"@Irritabilidadno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Irritabilidadsi","X")    
+                plantillaxml = replace(plantillaxml,"@Irritabilidadno","")    
+     }                             
+
+        //Diarrea
+      switch field.dstr(data,'dc_diarrea','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Diarreasi","")    
+                plantillaxml = replace(plantillaxml,"@Diarreano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Diarreasi","X")    
+                plantillaxml = replace(plantillaxml,"@Diarreano","")    
+     }         
+
+        //Vomito
+      switch field.dstr(data,'dc_vomitos','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Vomitosi","")    
+                plantillaxml = replace(plantillaxml,"@Vomitono","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Vomitosi","X")    
+                plantillaxml = replace(plantillaxml,"@Vomitono","")    
+     }          
+
+        //Calosfrios
+      switch field.dstr(data,'dc_calosfrios','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Calosfriossi","")    
+                plantillaxml = replace(plantillaxml,"@Calosfriosno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Calosfriossi","X")    
+                plantillaxml = replace(plantillaxml,"@Calosfriosno","")    
+     }           
+
+        //Dolorabdominal
+      switch field.dstr(data,'dc_dolorabdominal','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Dolorabdominalsi","")    
+                plantillaxml = replace(plantillaxml,"@Dolorabdominalno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Dolorabdominalsi","X")    
+                plantillaxml = replace(plantillaxml,"@Dolorabdominalno","")    
+     }                   
+
+        //Mialgias
+      switch field.dstr(data,'dc_mialgias','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Mialgiassi","")    
+                plantillaxml = replace(plantillaxml,"@Mialgiasno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Mialgiassi","X")    
+                plantillaxml = replace(plantillaxml,"@Mialgiasno","")    
+     }          
+
+        //Artralgias
+      switch field.dstr(data,'dc_artralgias','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Artralgiassi","")    
+                plantillaxml = replace(plantillaxml,"@Artralgiasno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Artralgiassi","X")    
+                plantillaxml = replace(plantillaxml,"@Artralgiasno","")    
+     }           
+
+        //AtaqueGeneral
+      switch field.dstr(data,'dc_ataqueestadogeneral','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@AtaqueGeneralsi","")    
+                plantillaxml = replace(plantillaxml,"@AtaqueGeneralno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@AtaqueGeneralsi","X")    
+                plantillaxml = replace(plantillaxml,"@AtaqueGeneralno","")    
+     }                   
+
+        //Rinorrea
+      switch field.dstr(data,'dc_rinorrea','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Rinorreasi","")    
+                plantillaxml = replace(plantillaxml,"@Rinorreano","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Rinorreasi","X")    
+                plantillaxml = replace(plantillaxml,"@Rinorreano","")  
+     }           
+
+        //Polipnea
+      switch field.dstr(data,'dc_polipnea','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Polipneasi","")    
+                plantillaxml = replace(plantillaxml,"@Polipneano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Polipneasi","X")    
+                plantillaxml = replace(plantillaxml,"@Polipneano","")    
+     }        
+
+        //Odinofagea
+      switch field.dstr(data,'dc_odinofagia','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Odinofageasi","")    
+                plantillaxml = replace(plantillaxml,"@Odinofageano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Odinofageasi","X")    
+                plantillaxml = replace(plantillaxml,"@Odinofageano","")    
+     }       
+
+        //Conjuntivitis
+      switch field.dstr(data,'dc_conjuntivitis','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Conjuntivitissi","")    
+                plantillaxml = replace(plantillaxml,"@Conjuntivitisno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Conjuntivitissi","X")    
+                plantillaxml = replace(plantillaxml,"@Conjuntivitisno","")    
+     }  
+
+        //Cianosis
+      switch field.dstr(data,'dc_cianosis','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Cianosissi","")    
+                plantillaxml = replace(plantillaxml,"@Cianosisno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Cianosissi","X")    
+                plantillaxml = replace(plantillaxml,"@Cianosisno","")    
+     }          
+
+        //Convulsiones
+      switch field.dstr(data,'dc_convulsiones','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Convulsionessi","")    
+                plantillaxml = replace(plantillaxml,"@Convulsionesno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Convulsionessi","X")    
+                plantillaxml = replace(plantillaxml,"@Convulsionesno","")    
+     }
+
+        //Otro
+        plantillaxml = replace(plantillaxml,"@Sintomasvalor",field.dstr(data,'dc_otrossintomas',''))    
+
+    //Comorbilidad
+  //ver el campo dc_comorbilidad de la bd ya que no es solicitado en el reporte
+
+        //Diabetes
+      switch field.dstr(data,'dc_diabetes','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Diabetessi","")    
+                plantillaxml = replace(plantillaxml,"@Diabetesno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Diabetessi","X")    
+                plantillaxml = replace(plantillaxml,"@Diabetesno","")    
+     }        
+
+        //EPOC
+      switch field.dstr(data,'dc_epoc','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@EPOCsi","")    
+                plantillaxml = replace(plantillaxml,"@EPOCno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@EPOCsi","X")    
+                plantillaxml = replace(plantillaxml,"@EPOCno","")  
+     }          
+
+        //Asma
+      switch field.dstr(data,'dc_asma','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Asmasi","")    
+                plantillaxml = replace(plantillaxml,"@Asmano","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Asmasi","X")    
+                plantillaxml = replace(plantillaxml,"@Asmano","")  
+     }         
+
+        //Inmunosupresion
+      switch field.dstr(data,'dc_inmunosupresion','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Inmunosupresionsi","")    
+                plantillaxml = replace(plantillaxml,"@Inmunosupresionno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Inmunosupresionsi","X")    
+                plantillaxml = replace(plantillaxml,"@Inmunosupresionno","")  
+     }         
+
+        //Hipertension
+      switch field.dstr(data,'dc_hipertension','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Hipertensionsi","")    
+                plantillaxml = replace(plantillaxml,"@Hipertensionno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Hipertensionsi","X")    
+                plantillaxml = replace(plantillaxml,"@Hipertensionno","")  
+     }        
+
+        //VIHSida
+      switch field.dstr(data,'dc_sida','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@VIHSidasi","")    
+                plantillaxml = replace(plantillaxml,"@VIHSidano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@VIHSidasi","X")    
+                plantillaxml = replace(plantillaxml,"@VIHSidano","")    
+     }          
+
+        //Cardiovascular
+      switch field.dstr(data,'dc_cardiovascular','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Cardiovascularsi","")    
+                plantillaxml = replace(plantillaxml,"@Cardiovascularno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Cardiovascularsi","X")    
+                plantillaxml = replace(plantillaxml,"@Cardiovascularno","")  
+     }        
+
+        //Obesidad
+      switch field.dstr(data,'dc_obsidad','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Obesidadsi","")    
+                plantillaxml = replace(plantillaxml,"@Obesidadno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Obesidadsi","X")    
+                plantillaxml = replace(plantillaxml,"@Obesidadno","")  
+     }        
+
+        //InsuficienciaRenal
+      switch field.dstr(data,'dc_insuficienciarenal','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@InsuficienciaRenalsi","")    
+                plantillaxml = replace(plantillaxml,"@InsuficienciaRenalno","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@InsuficienciaRenalsi","X")    
+                plantillaxml = replace(plantillaxml,"@InsuficienciaRenalno","")  
+     }         
+
+        //InsuficienciaHepatica
+      switch field.dstr(data,'dc_insuficienciahepatica','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@InsuficienciaHepaticasi","")    
+                plantillaxml = replace(plantillaxml,"@InsuficienciaHepaticano","X") 
+         case "1"
+                plantillaxml = replace(plantillaxml,"@InsuficienciaHepaticasi","X")    
+                plantillaxml = replace(plantillaxml,"@InsuficienciaHepaticano","") 
+     }                  
+
+        //Tabaquismo
+      switch field.dstr(data,'dc_tabaquismo','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Tabaquismosi","")    
+                plantillaxml = replace(plantillaxml,"@Tabaquismono","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Tabaquismosi","X")    
+                plantillaxml = replace(plantillaxml,"@Tabaquismono","")
+     }           
+
+        //Otro
+        plantillaxml = replace(plantillaxml,"@Comorbilidadvalor",field.dstr(data,'dc_otraenfermedad',''))    
+
+
+
+    //UnidadMedica
+        //Ingreso
+        plantillaxml = replace(plantillaxml,"@Ingresoservicio",field.dstr(data,'servicioingreso',''))    
+
+        //Tipo de paciente
+      switch field.dstr(data,'tipopaciente','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@IngresotipopacienteAmbulatorio","X")    
+                plantillaxml = replace(plantillaxml,"@IngresotipopacienteHospitalizado","")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@IngresotipopacienteAmbulatorio","")    
+                plantillaxml = replace(plantillaxml,"@IngresotipopacienteHospitalizado","X")    
+     }        
+        plantillaxml = replace(plantillaxml,"@Ingresofechaingreso",Regresafecha(str2dt(field.str(data,'fechadeingresounidad'))))    
+
+        //UCI
+      switch field.dstr(data,'casoingresadouci','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@UCIsi","")    
+                plantillaxml = replace(plantillaxml,"@UCIno","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@UCIsi","X")    
+                plantillaxml = replace(plantillaxml,"@UCIno","")    
+     }         
+
+        //Intubado
+      switch field.dstr(data,'casointubado','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Intubadosi","")    
+                plantillaxml = replace(plantillaxml,"@Intubadono","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Intubadosi","X")    
+                plantillaxml = replace(plantillaxml,"@Intubadono","")
+     }                 
+
+        //Clinica
+      switch field.dstr(data,'neumoniaclinica','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Clinicasi","")    
+                plantillaxml = replace(plantillaxml,"@Clinicano","X")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Clinicasi","X")    
+                plantillaxml = replace(plantillaxml,"@Clinicano","")
+     }         
+
+        //Radiologica
+      switch field.dstr(data,'neumoniaradiologica','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Radiologicasi","")    
+                plantillaxml = replace(plantillaxml,"@Radiologicano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Radiologicasi","X")    
+                plantillaxml = replace(plantillaxml,"@Radiologicano","")    
+     }          
+
+
+    //Tratamiento
+        //AntipireticoOAnalgesico
+      switch field.dstr(data,'neumoniaradiologica','2')
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicosi","X")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicono","")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicoseignora","")    
+         case "2"
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicosi","")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicono","X")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicoseignora","")    
+          case "3"
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicosi","")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicono","")    
+                plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicoseignora","X")    
+     }         
+        plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicofechatratamiento",Regresafecha(str2dt(field.str(data,'fechatratamientoantipiretico'))))    
+
+        //Paracetamol
+      switch field.dstr(data,'ap_paracetamol','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Paracetamol","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Paracetamol","X")
+     }        
+
+        //Ibuprofeno
+      switch field.dstr(data,'ap_ibuprofeno','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Ibuprofeno","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Ibuprofeno","X")
+     }              
+
+        //Acidoacetilsalicilico
+      switch field.dstr(data,'ap_acidoacetilsalicilico','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Acidoacetilsalicilico","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Acidoacetilsalicilico","X")
+     }              
+
+        //Clonixinatodelisina
+      switch field.dstr(data,'ap_clonoxinatodelisina','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Clonixinatodelisina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Clonixinatodelisina","X")
+     }          
+
+        //Naproxeno
+      switch field.dstr(data,'ap_naproxeno','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Naproxeno","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Naproxeno","X")
+     }        
+
+        //Piroxicam
+      switch field.dstr(data,'ap_piroxicam','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Piroxicam","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Piroxicam","X")
+     }          
+
+        //Metamizolsodico
+      switch field.dstr(data,'ap_metamizolsodico','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Metamizolsodico","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Metamizolsodico","X")
+     }        
+
+        //Diclofenaco
+      switch field.dstr(data,'ap_diclofenaco','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Diclofenaco","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Diclofenaco","X")
+     }          
+
+        //Ketorolaco
+      switch field.dstr(data,'ap_ketorolaco','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Ketorolaco","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Ketorolaco","X")
+     }         
+
+        //Otro
+        plantillaxml = replace(plantillaxml,"@AntipireticoOAnalgesicovalor",field.dstr(data,'ap_otro',''))    
+
+    //Antiviral
+      switch field.dstr(data,'ap_ketorolaco','2')
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Antiviralsi","x")
+                plantillaxml = replace(plantillaxml,"@Antiviralno","")
+                plantillaxml = replace(plantillaxml,"@Antiviralseignora","")
+         case "2"
+                plantillaxml = replace(plantillaxml,"@Antiviralsi","")
+                plantillaxml = replace(plantillaxml,"@Antiviralno","x")
+                plantillaxml = replace(plantillaxml,"@Antiviralseignora","")
+         case "3"
+                plantillaxml = replace(plantillaxml,"@Antiviralsi","")
+                plantillaxml = replace(plantillaxml,"@Antiviralno","")
+                plantillaxml = replace(plantillaxml,"@Antiviralseignora","x")
+     }     
+       plantillaxml = replace(plantillaxml,"@Antiviralfechatratamiento",Regresafecha(str2dt(field.str(data,'fechatratamientoantiviral'))))
+
+        //Amantadina
+      switch field.dstr(data,'av_amantadina','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Amantadina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Amantadina","X")
+     }        
+
+        //Rimantadina
+      switch field.dstr(data,'av_rimantadina','0')
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Rimantadina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Rimantadina","X")
+     }        
+
+        //Oseltamivir
+      switch field.dstr(data,'av_oseltamivir','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Oseltamivir","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Oseltamivir","x")
+     }            
+
+        //Zanamivir
+     switch field.dstr(data,'av_zanamivir','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Zanamivir","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Zanamivir","X")
+     }      
+
+        //Peramivir
+     switch field.dstr(data,'av_peramivir','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Peramivir","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Peramivir","X")
+     } 
+
+        //Ribavirina
+     switch field.dstr(data,'av_ribavirina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Ribavirina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Ribavirina","X")
+     }      
+
+        //Otro
+        plantillaxml = replace(plantillaxml,"@Antiviralvalor",field.dstr(data,'av_otro',''))
+
+
+    //Antibiotico
+     switch field.dstr(data,'tratamientoantibiotico','') 
+     {
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Antibioticosi","X")    
+                plantillaxml = replace(plantillaxml,"@Antibioticono","")    
+                plantillaxml = replace(plantillaxml,"@Antibioticoseignora","")    
+         case "2"
+                plantillaxml = replace(plantillaxml,"@Antibioticosi","")    
+                plantillaxml = replace(plantillaxml,"@Antibioticono","X")    
+                plantillaxml = replace(plantillaxml,"@Antibioticoseignora","")    
+         case "3"
+                plantillaxml = replace(plantillaxml,"@Antibioticosi","")    
+                plantillaxml = replace(plantillaxml,"@Antibioticono","")    
+                plantillaxml = replace(plantillaxml,"@Antibioticoseignora","X")    
+     }     
+    plantillaxml = replace(plantillaxml,"@Antibioticofechatratamiento",Regresafecha(str2dt(field.str(data,'fechaingresounidad'))))    
+
+        //Penicilina
+     switch field.dstr(data,'ab_penicilina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Penicilina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Penicilina","X")
+     }        
+
+        //Dicloxacilina
+     switch field.dstr(data,'ab_dicloxacilina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Dicloxacilina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Dicloxacilina","X")
+     }        
+
+        //Ampicilina
+     switch field.dstr(data,'ab_ampicilina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Ampicilina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Ampicilina","X")
+     }       
+
+        //Amikacina
+     switch field.dstr(data,'ab_amikacina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Amikacina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Amikacina","X")
+     }               
+
+        //Doxiciclina
+     switch field.dstr(data,'ab_doxiciclina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Doxiciclina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Doxiciclina","X")
+     }              
+
+        //Cefalosporina
+     switch field.dstr(data,'ab_cefalosporina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Cefalosporina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Cefalosporina","X")
+     }               
+
+        //Clindamicina
+     switch field.dstr(data,'ab_clindamicina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Clindamicina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Clindamicina","X")
+     }  
+
+             //Claritromicina
+     switch field.dstr(data,'ab_claritromicina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Claritromicina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Claritromicina","X")
+     }         
+
+        //Ciprofloxacino
+     switch field.dstr(data,'ab_ciprofloxacino','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Ciprofloxacino","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Ciprofloxacino","X")
+     }         
+
+        //Meropenem
+     switch field.dstr(data,'ab_meropenem','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Meropenem","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Meropenem","X")
+     }         
+
+        //Vancomicina
+     switch field.dstr(data,'ab_vancomicina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Vancomicina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Vancomicina","x")
+     }         
+
+        //Amoxicilina
+     switch field.dstr(data,'ab_amoxicilina','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Amoxicilina","")
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Amoxicilina","X")
+     }         
+
+        //Otro
+        plantillaxml = replace(plantillaxml,"@Antibioticoavalor",field.dstr(data,'ab_otro',''))
+ 
+ 
+   //Laboratorio
+        //Muestra
+     switch field.dstr(data,'muestrapaciente','0') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Muestrasi","")    
+                plantillaxml = replace(plantillaxml,"@Muestrano","X")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Muestrasi","X")    
+                plantillaxml = replace(plantillaxml,"@Muestrano","")    
+     }        
+        plantillaxml = replace(plantillaxml,"@Muestrafechadetoma",Regresafecha(str2dt(field.str(data,'fechatomamuestra'))))    
+        plantillaxml = replace(plantillaxml,"@Muestrafechaderecepcion",Regresafecha(str2dt(field.str(data,'fecharecepcionmuestra'))))    
+        plantillaxml = replace(plantillaxml,"@Muestrafechademuestra",Regresafecha(str2dt(field.str(data,'fechaenviomuestra'))))    
+        plantillaxml = replace(plantillaxml,"@Muestrafechaderesultado",Regresafecha(str2dt(field.str(data,'fecharesultado'))))    
+        plantillaxml = replace(plantillaxml,"@Muestraresultado",field.dstr(data,'resultado',''))    
+
+        //ExudadoFaringeo
+     switch field.dstr(data,'tm_exudadofaringeo','') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ExudadoFaringeo","")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ExudadoFaringeo","X")  
+     }            
+
+        //ExudadoNasofaringeo
+     switch field.dstr(data,'tm_exudadonasofaringeo','') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@ExudadoNasofaringeo","")    
+         case "1"
+                plantillaxml = replace(plantillaxml,"@ExudadoNasofaringeo","X")    
+     }          
+
+        //LavadoBronquial
+     switch field.dstr(data,'tm_lavadobronquial','') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@LavadoBronquial","")   
+         case "1"
+                plantillaxml = replace(plantillaxml,"@LavadoBronquial","X")   
+     }           
+
+        //BiopsiaPulmon
+     switch field.dstr(data,'tm_biopsiapulmon','') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@BiopsiaPulmon","")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@BiopsiaPulmon","X")  
+     }          
+
+        //Diagnostico
+        plantillaxml = replace(plantillaxml,"@Diagnostico",field.dstr(data,'laboratoriodiagnostico',''))    
+
+       //Evolución
+        plantillaxml = replace(plantillaxml,"@Evoluciónevolucion", field.dstr(data,'evolucion','') )    
+        plantillaxml = replace(plantillaxml,"@Evoluciónfechaegreso",Regresafecha(str2dt(field.str(data,'fechaingreso'))))    
+        //Defuncion
+         plantillaxml = replace(plantillaxml,"@Defuncionfecha",Regresafecha(str2dt(field.str(data,'fechadefuncion'))))    
+        plantillaxml = replace(plantillaxml,"@Defuncionfolio",field.dstr(data,'foliocerficiadodefuncion',''))    
+        //Covid19 
+     switch field.dstr(data,'defuncioncovid','') 
+     {
+         case "0"
+                plantillaxml = replace(plantillaxml,"@Covid19si","")    
+                plantillaxml = replace(plantillaxml,"@Covid19no","X")  
+         case "1"
+                plantillaxml = replace(plantillaxml,"@Covid19si","X")    
+                plantillaxml = replace(plantillaxml,"@Covid19no","")  
+     }           
+
+
+    //Contactos  iteracion  -------------------------------
+        iteracioncontacto = "<Contactos>"
+        
+        for i=0;i<table.rows(datoscontacto)
+        {
+        iteracioncontacto = iteracioncontacto + "<Contacto apellidopaterno = \" " + cell.strc(datoscontacto, i, "primerapellido") + " \" apellidomaterno = \"" +  cell.strc(datoscontacto, i, "segundoapellido") + "\" nombre = \"" + cell.strc(datoscontacto, i, "nombres") + "\"" 
+        
+            switch cell.strc(datoscontacto, i, "sexo")
+            {
+                case "1"
+                {
+                    iteracioncontacto = iteracioncontacto + " sexomujer = \"\" sexohombre = \"X\""                
+                }
+                case "2"
+                {
+                    iteracioncontacto = iteracioncontacto + " sexomujer=\"X\" sexohombre=\"\""
+                }               
+            }    
+
+             iteracioncontacto = iteracioncontacto + " edad = \"" + cell.strc(datoscontacto, i, "edad") + "\""                     
+
+            switch cell.strc(datoscontacto, i, "tipo_de_contacto")
+            {
+                case "1"
+                {
+                    iteracioncontacto = iteracioncontacto + " tipodecontacto = \"ID\""                
+                }
+                case "2"
+                {
+                    iteracioncontacto = iteracioncontacto + " tipodecontacto=\"ED\""
+                }
+                         
+            }
+
+              iteracioncontacto = iteracioncontacto + " presentasintomas=\"" + cell.strc(datoscontacto, i, "signos_y_sintomas") + "\" observaciones=\"" + cell.strc(datoscontacto, i, "signos_y_sintomas") +"\"></Contacto>"//+"\r\n"
+        }
+        //iteracioncontacto =  iteracioncontacto.trim("\r\n") 
+        iteracioncontacto = iteracioncontacto + "</Contactos>"
+
+         plantillaxml = replace(plantillaxml,"</Contactos>", iteracioncontacto)  
+
+
+    //Elaboracion
+     plantillaxml = replace(plantillaxml,"@Elaboracionnombre",field.dstr(data,'nombreycargoelaboro',''))  
+   //  plantillaxml = replace(plantillaxml,"@Elaboracioncargo",field.dstr(data,'entidad',''))  
+     plantillaxml = replace(plantillaxml,"@Elaboracionfecha",Regresafecha(str2dt(field.str(data,'fechaelaboracion'))))  //Campo de fecha
+
+     //Autorizacion
+     plantillaxml = replace(plantillaxml,"@Autorizacionnombre",field.dstr(data,'nombreycargoautorizo',''))  
+ //    plantillaxml = replace(plantillaxml,"@Autorizacioncargo",field.dstr(data,'entidad',''))  
+
+     //familiar
+     plantillaxml = replace(plantillaxml,"@familiarnombre",field.dstr(data,'contactoelaboro',''))  
+   //  plantillaxml = replace(plantillaxml,"@familiartelefono",field.dstr(data,'entidad',''))  
+    // plantillaxml = replace(plantillaxml,"@familiarcorreo",field.dstr(data,'entidad',''))  
+   //  do print(plantillaxml)
+          
+        nombrearchivo = field.str(data,'sys_guid')
+        exepath = "E:\\devkron_site\\covid19\\ImpresionDePlantillas\\induxsoft.shcp_pl.ImpresionDePlantillas.exe" // Ruta del exe
+        xmpath = "E:\\devkron_site\\covid19\\formatos\\" + nombrearchivo + ".xml" // Ruta del xml
+        temppath = "E:\\devkron_site\\covid19\\xsfos\\" + nombrearchivo + ".fo" //Ruta del fo resultante
+        xsfopath = "E:\\devkron_site\\covid19\\ImpresionDePlantillas\\ReporteCovid19.xsfo" //Ruta del xsfo
+        filepath =  "E:\\devkron_site\\covid19\\formatos\\" + nombrearchivo + ".pdf" //Ruta del pdf resultante     
+
+        do file.wtext(xmpath,plantillaxml)
+
+        arguments = " \""+xmpath+"\" \""+temppath+"\" \""+xsfopath+"\" \""+filepath+"\" "
+       
+      // do print(arguments)
+       do Nexmo.start(exepath,arguments)
+	   
+	   
+	   if(file.exists(temppath))
+	   {
+	    do file.delete(temppath)
+	   }
+
+    using dx
+    {
+            @"success":@true
+            @"data": "\\covid19\\formatos\\" + nombrearchivo + ".pdf"   
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+    
+    d=to.json(dx)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d   
+}

@@ -1,0 +1,141 @@
+#include "dkli.dkh"
+#!
+module "updateGenerales"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    fechaingreso : @http_context<"request/post/fechaingreso">
+    primerapellido : @http_context<"request/post/primerapellido">
+    segundoapellido : @http_context<"request/post/segundoapellido">
+    nombres : @http_context<"request/post/nombres">
+    fechanacimientodia : @http_context<"request/post/fechanacimientodia">
+    fechanacimientomes : @http_context<"request/post/fechanacimientomes">
+    fechanacimientoanio : @http_context<"request/post/fechanacimientoanio">
+    edad : @http_context<"request/post/fechanacimientoedad">
+    curp : @http_context<"request/post/curp">
+    sexo : @http_context<"request/post/sexo">
+    embarazo : @http_context<"request/post/embarazo">
+    mesembarazo : @http_context<"request/post/mesembarazo">
+    puerperio : @http_context<"request/post/puerperio">
+    diaspuerperio : @http_context<"request/post/diaspuerperio">
+    nacionalidad : @http_context<"request/post/nacionalidad">
+    paisorigen : @http_context<"request/post/paisorigen">
+    numeroexpediente : @http_context<"request/post/numeroexpediente">
+    entidadnacimiento : @http_context<"request/post/entidadnacimiento">
+    entidadresidencia : @http_context<"request/post/entidadresidencia">
+    municipioresidencia : @http_context<"request/post/municipioresidencia">
+    localidad : @http_context<"request/post/localidad">
+    calle : @http_context<"request/post/calle">
+    numeroexterno : @http_context<"request/post/numeroexterno">
+    numerointerno : @http_context<"request/post/numerointerno">
+    entrecalle1 : @http_context<"request/post/entrecalle1">
+    entrecalle2 : @http_context<"request/post/entrecalle2">
+    colonia : @http_context<"request/post/colonia">
+    codigopostal : @http_context<"request/post/codigopostal">
+    telefono : @http_context<"request/post/telefono">
+    indigena : @http_context<"request/post/indigena">
+    lenguaindigena : @http_context<"request/post/lenguaindigena">
+    ocupacion : @http_context<"request/post/ocupacion">
+    migrante : @http_context<"request/post/migrante">
+	
+	pk : @http_context<"request/post/pk">
+
+
+    ref now = dbr.sql("now()")
+    
+    
+
+    new rec
+    {        
+        @"primerapellido" : primerapellido
+        @"segundoapellido" : segundoapellido
+        @"nombres" : nombres                
+        @"curp" : curp
+        @"sexo" : sexo
+        @"embarazo" : embarazo
+        @"mesesembarazo" : mesembarazo
+        @"puerperio" : puerperio
+        @"diaspuerperio" : diaspuerperio
+        @"nacionalidad" : nacionalidad
+        @"paisorigen" : paisorigen
+        @"nexpedientesegsocial" : numeroexpediente
+        @"entidadnacimiento" : entidadnacimiento
+        @"entidadresidencia" : entidadresidencia
+        @"municipioresidencia" : municipioresidencia
+        @"localidadresidencia" : localidad
+        @"calleresidencia" : calle
+        @"numeroexternoresidencia" : numeroexterno
+        @"numerointernoresidencia" : numerointerno
+        @"entrecallesresidencia" : entrecalle1
+        @"entrecallesresidencia2" : entrecalle2
+        @"coloniaresidencia" : colonia
+        @"codigopostalresidencia" : codigopostal
+        @"telefono" : telefono
+        @"esindigena" : indigena
+        @"lenguaindigena" : lenguaindigena
+        @"ocupacion" : ocupacion
+        @"esmigrante" : migrante
+		@"sys_pk" : pk
+    }    
+
+    if(fechaingreso != "")
+    {
+        rec<"fechaingresounidad"> : fechaingreso
+    }
+    if(fechanacimientodia != "")
+    {
+        rec<"fechanacimientodia"> : fechanacimientodia
+    }
+    if(fechanacimientomes != "")
+    {
+        rec<"fechanacimientomes"> : fechanacimientomes
+    }
+    if(fechanacimientoanio != "")
+    {
+        rec<"fechanacimientoanio"> : fechanacimientoanio
+    }
+    if(edad != "")
+    {
+        rec<"edad"> : edad
+    }
+	
+	 text queryrecver
+    {$"
+       select sys_recver from covid.estudio_epidemiologico where sys_pk=@sys_pk;
+    "}
+
+    recver = dbr.num(db,queryrecver,rec)
+
+    using rec
+    {
+        @"sys_recver" : recver
+    }
+
+    do dbr.update(db,"covid.estudio_epidemiologico",rec, "sys_pk=@sys_pk",rec)    	
+
+    new dx
+    {
+        @"success":@true
+        @"data": "Actualizado con éxito"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+     d=to.json(dx)
+     do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

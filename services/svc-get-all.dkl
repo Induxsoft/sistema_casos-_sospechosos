@@ -1,0 +1,52 @@
+#include "dkli.dkh"
+#!
+module "ServicioListarproductos"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    apellido_paterno:@http_context<"request/post/apellido_paterno">
+    pk:@http_context<"request/post/pk">
+
+    apellido_paterno = "%" + apellido_paterno
+    apellido_paterno = trim(apellido_paterno)
+    apellido_paterno = tolower(apellido_paterno)
+    apellido_paterno = apellido_paterno + "%"
+
+    new mirecord
+    {
+        @"sys_pk": pk
+        @"apellido_paterno": apellido_paterno
+    }
+
+    text querybusqueda
+    {$"
+       SELECT * FROM covid.estudio_epidemiologico where sys_pk = @sys_pk and primerapellido like @apellido_paterno;
+    "}
+
+    ref t = dbr.rec(db,querybusqueda,mirecord)
+
+    new dx
+    {
+        @"success":@true
+        @"data": to.json(t)
+    }
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data": last_error()
+        }        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

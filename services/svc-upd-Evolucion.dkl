@@ -1,0 +1,67 @@
+#include "dkli.dkh"
+#!
+module "updateEvolucion"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+    
+    evolucion : @http_context<"request/post/evolucion_combo">
+    fecha_ingreso : @http_context<"request/post/fecha_ingreso">
+    fechadefuncion : @http_context<"request/post/fechadefuncion">
+    foliocerficiadodefuncion : @http_context<"request/post/foliocerficiadodefuncion">
+    defuncioncovid : @http_context<"request/post/defuncioncovid">   
+
+    sys_pk : @http_context<"request/post/pk">
+
+    new rec
+    {
+        @"evolucion" : evolucion        
+        @"defuncioncovid" : defuncioncovid   
+        @"foliocerficiadodefuncion":foliocerficiadodefuncion      
+    }    
+
+    if(fecha_ingreso != "")
+    {
+        rec<"fecha_ingreso"> : fecha_ingreso
+    }
+
+    if(fechadefuncion != "")
+    {
+        rec<"fechadefuncion"> : fechadefuncion
+    }
+
+
+    new recparam
+    {
+        @"sys_pk" : sys_pk
+    }
+
+    
+    do dbr.update(db,"covid.estudio_epidemiologico", rec,"sys_pk=@sys_pk",recparam)    
+        
+    new dx
+    {
+        @"success":@true
+        @"data": "Se ha actualizado exitosamente"
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

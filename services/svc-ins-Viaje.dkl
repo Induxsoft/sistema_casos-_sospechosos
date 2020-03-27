@@ -1,0 +1,59 @@
+#include "dkli.dkh"
+#!
+module "insertarViaje"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    pais_visitado : @http_context<"request/post/pais_visitado">
+    ciudad_visitada : @http_context<"request/post/ciudad_visitada">
+    fecha_llegada : @http_context<"request/post/fecha_llegada">
+    fecha_salida : @http_context<"request/post/fecha_salida">
+    aerolinea_vuelo : @http_context<"request/post/aerolinea_vuelo">
+    fK_ee : @http_context<"request/post/fK_ee">    
+
+    new rec
+    {
+        @"pais_visitado" : pais_visitado
+        @"ciudad_visitada" : ciudad_visitada
+        @"fecha_llegada" : fecha_llegada
+        @"fecha_salida" : fecha_salida
+        @"aerolinea_vuelo" : aerolinea_vuelo
+        @"fK_ee" : fK_ee
+    }    
+
+    do dbr.insert(db,"covid.fk_paisesvisitados",rec)
+    
+    text queryallViajes
+    {$"
+        select sys_pk, pais_visitado , ciudad_visitada, DATE_FORMAT(fecha_llegada, '%Y-%m-%d'), DATE_FORMAT(fecha_salida, '%Y-%m-%d'), aerolinea_vuelo, fk_ee from covid.fk_paisesvisitados where fK_ee=@fK_ee;
+    "}
+
+    ref viajes = dbr.table(db,queryallViajes,rec)
+
+    new dx
+    {
+        @"success":@true
+        @"data": to.json(viajes)
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

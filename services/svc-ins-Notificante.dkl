@@ -1,0 +1,65 @@
+#include "dkli.dkh"
+#!
+module "insertarNotificante"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    entidad : @http_context<"request/post/entidad">
+    jurisdiccion : @http_context<"request/post/jurisdiccion">
+    municipio : @http_context<"request/post/municipio">
+    unidadmedica : @http_context<"request/post/unidadmedica">    
+    institucion : @http_context<"request/post/institucion">
+    clues : @http_context<"request/post/clues">    
+
+    ref now = dbr.sql("now()")
+    uuid1 = uuid()
+
+    new rec
+    {
+        @"sys_guid" : uuid1
+        @"sys_recver" : 0
+        @"sys_timestamp*" : now
+        @"sys_dtcreated*" : now
+        @"entidad" : entidad
+        @"jurisdiccion" : jurisdiccion
+        @"municipio" : municipio
+        @"nombreunidadmedica" : unidadmedica
+        @"institucion" : institucion
+        @"clues" : clues
+    }    
+
+    do dbr.insert(db,"covid.estudio_epidemiologico",rec)
+    
+    text queryall
+    {$"
+        select sys_pk from covid.estudio_epidemiologico where sys_guid=@sys_guid;
+    "}
+
+    pk = dbr.num(db,queryall,rec)
+
+    new dx
+    {
+        @"success":@true
+        @"data": pk
+    }
+
+    exception
+    {
+        using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+        
+    }
+     d=to.json(dx)
+     do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+    @http_context<"response/text">: d
+}

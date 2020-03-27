@@ -1,0 +1,49 @@
+#include "dkli.dkh"
+#!
+module "ServicioActualizarCliente"
+{
+    #include "functions.dkh"
+    #include "dbr.dkh"
+    #include "serialize.dkh"
+
+ 
+    qname = "epifania@induxsoft"
+    ref db = dbr.open(qname)
+
+    strData:@http_context<"request/post/data">
+
+    ref data=from.json(strData)
+
+    //data<"sys_timestamp*">:dbr.sql("now()")
+    
+
+    do dbr.update(db,"covid.fk_paisesvisitados",data,"sys_pk=@codigo",data)
+
+    
+
+    new dx
+    {
+        @"success":@true
+        @"data*":data
+    }
+
+    
+
+
+    exception
+    {
+       using dx
+        {
+            @"success":@false
+            @"data":last_error()
+        }
+    }
+
+    d=to.json(dx)
+    do dbr.close(db)
+    @http_context<"response/output">:"text"
+    @http_context<"response/headers/Content-Type">:"text/plain;charset=utf-8"
+	@http_context<"response/headers/Access-Control-Allow-Origin">:"https://induxsoft.net"
+	
+    @http_context<"response/text">: d
+}
